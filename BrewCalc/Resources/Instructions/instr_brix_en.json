@@ -1,0 +1,17 @@
+[
+    { "type": "h3", "text": "Refractometer calculator" },
+    { "type": "paragraph", "text": "Allows to calculate the parameters of beer from refractometer measurements - Brix. Has 2 modes:" },
+    { "type": "ol", "items": [
+        "**Brix.** If you know original and final gravity in Brix scale you can calculate this values in Plato or hydrometer scale, as well as alcohol by volume value (ABV).",
+        "**Final measurements.** Use this mode in case of you have the final values in Brix and hydrometer scales and want to calculate original gravity and ABV value."
+    ]},
+    { "type": "h4", "text": "Correction factor" },
+    { "type": "paragraph", "text": "This factor can be different for different breweries. How to calculate it:" },
+    { "type": "ol", "items": [
+        "Measure the specific gravity with refractometer.",
+        "Measure the specific gravity with hydrometer.",
+        "Convert hydrometer value to Brix using the equation **Brix=(SG-1)/0.004,** where SG - specific gravity measured by hydrometer.",
+        "Divide refractometer value (1) by actual hydrometer value (3). Now you have a number between 1.02 and 1.06.",
+        "Repeat this calculations several times and calculate the average value. You can use this number as a correction factor for your brewery. The factor is about 1.04 in general and we use this value by default."
+    ]}
+]
