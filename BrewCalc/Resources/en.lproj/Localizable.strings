@@ -1,0 +1,126 @@
+/* 
+  Localizable.strings
+  BrewCalc
+
+  Created by Ilya on 10.04.14.
+  Copyright (c) 2014 Ilya Khokhlov. All rights reserved.
+*/
+
+"locale" = "en";
+
+"calcs" = "Calculators";
+
+"calc.metrics" = "Metrics";
+"calc.calorie" = "Calories";
+"calc.gravity" = "Plato - Gravity";
+"calc.alcohol.table" = "ABV Table";
+"calc.alcohol.formula" = "ABV Plato";
+"calc.bittering" = "IBU (Glenn Tinseth)";
+"calc.brix" = "Refractometer (Brix)";
+
+"calc.metrics.litres" = "Litres";
+"calc.metrics.millilitres" = "Millilitres";
+"calc.metrics.decalitres" = "Decalitres";
+"calc.metrics.hectolitres" = "Hectolitres";
+"calc.metrics.enggallon" = "Eng gallons";
+"calc.metrics.engunc" = "Eng fl oz";
+"calc.metrics.engpint" = "Eng pint";
+"calc.metrics.usgallon" = "US gallons";
+"calc.metrics.usunc" = "US fl oz";
+"calc.metrics.uspint" = "US pint";
+"calc.metrics.gramm" = "Grams";
+"calc.metrics.kilogramm" = "Kilograms";
+"calc.metrics.unc" = "Oz";
+"calc.metrics.funt" = "Pounds";
+"calc.metrics.celsius" = "Celsius (°C)";
+"calc.metrics.fahrenheit" = "Fahrenheit (°F)";
+"calc.metrics.kelvin" = "Kelvin (K)";
+
+"metrics.volume" = "Volume";
+"metrics.weight" = "Weight";
+"metrics.temperature" = "Temperature";
+
+"calc.gravity.plato" = "°Plato";
+"calc.gravity.kgl" = "Kg/l";
+
+"calc.alcohol.table.input" = "Gravity";
+"calc.alcohol.table.result" = "ABV";
+"calc.alcohol.table.plato.begin" = "Original Plato";
+"calc.alcohol.table.plato.end" = "Final Plato";
+"calc.alcohol.table.kgl.begin" = "Original gravity";
+"calc.alcohol.table.kgl.end" = "Final gravity";
+"calc.alcohol.table.abv" = "ABV";
+
+"calc.alcohol.formula.input" = "Gravity";
+"calc.alcohol.formula.result" = "ABV";
+"calc.alcohol.formula.plato.begin" = "Original gravity";
+"calc.alcohol.formula.temp.begin" = "Original temperature";
+"calc.alcohol.formula.plato.end" = "Final gravity";
+"calc.alcohol.formula.temp.end" = "Final temperature";
+"calc.alcohol.formula.abv" = "ABV";
+
+"calc.brixes.gravity.input" = "Input";
+"calc.brixes.gravity.output" = "Output";
+"calc.brixes.gravity.ob" = "OG (Brix)";
+"calc.brixes.gravity.fb" = "FG (Brix)";
+"calc.brixes.gravity.og" = "OG";
+"calc.brixes.gravity.fg" = "FG";
+"calc.brixes.gravity.abv" = "ABV";
+"calc.brixes.gravity.kpd" = "Correction factor";
+
+"calc.calorie.input" = "Beer params";
+"calc.calorie.result" = "Caloric value";
+"calc.calorie.volume" = "Beer volume";
+"calc.calorie.og" = "Original gravity";
+"calc.calorie.fg" = "Final gravity";
+"calc.calorie.general" = "General";
+"calc.calorie.100g" = "100 ml";
+
+"calc.bittering.input" = "Hopping";
+"calc.bittering.output" = "Beer IBU";
+"calc.bittering.volume.litres" = "Batch volume, l";
+"calc.bittering.volume.gal" = "Batch volume, gallons";
+"calc.bittering.gravity.sg" = "Wort gravity (sg)";
+"calc.bittering.gravity.plato" = "Wort gravity (°Plato)";
+"calc.bittering.hop.param.weight.oz" = "Weight, oz";
+"calc.bittering.hop.param.weight.gram" = "Weight, gr";
+"calc.bittering.hop.param.alpha" = "Alpha";
+"calc.bittering.hop.param.min" = "Boiling, min";
+"calc.bittering.hop1.params" = "Hop 1 params";
+"calc.bittering.hop2.params" = "Hop 2 params";
+"calc.bittering.hop3.params" = "Hop 3 params";
+"calc.bittering.hop4.params" = "Hop 4 params";
+"calc.bittering.hop5.params" = "Hop 5 params";
+"calc.bittering.result" = "Total IBU";
+"calc.bittering.result.hop1" = "Hop 1 IBU";
+"calc.bittering.result.hop2" = "Hop 2 IBU";
+"calc.bittering.result.hop3" = "Hop 3 IBU";
+"calc.bittering.result.hop4" = "Hop 4 IBU";
+"calc.bittering.result.hop5" = "Hop 5 IBU";
+
+"menu.right.button" = "About";
+
+"button.close" = "Close";
+
+"about.title" = "About";
+"about.label.email" = "Looking forward to your feedback at:";
+"about.label.copyright" = "©\nDevelopment - Ilya Khokhlov\nDesign - Ilya Khokhlov & Demid";
+"about.alert.email.cant.send.title" = "Mail app not configured";
+"about.alert.email.cant.send.message" = "Email address has been copied to the clipboard";
+
+"OK" = "OK";
+
+"mail.subject" = "[Review]";
+
+"segment.units.plato" = "°Plato";
+"segment.units.gravity" = "SG (1.xxx)";
+"segment.units.celsii" = "°C";
+"segment.units.farenheit" = "°F";
+"segment.units.litres" = "Litres";
+"segment.units.gallons" = "US gallons";
+"segment.refractometer.brix" = "Brix";
+"segment.refractometer.gravity" = "Final measurements";
+"segment.units.metric" = "Metric units";
+"segment.units.us" = "US units";
+
+"instruction.title" = "About calculator";

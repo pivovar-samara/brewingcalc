@@ -1,0 +1,126 @@
+/* 
+  Localizable.strings
+  BrewCalc
+
+  Created by Ilya on 10.04.14.
+  Copyright (c) 2014 Ilya Khokhlov. All rights reserved.
+ */
+
+"locale" = "ru";
+
+"calcs" = "Калькуляторы";
+
+"calc.metrics" = "Единицы измерения";
+"calc.calorie" = "Калорийность";
+"calc.gravity" = "Плато - Единицы плотности";
+"calc.alcohol.table" = "ABV на основе таблицы";
+"calc.alcohol.formula" = "ABV на основе формул Плато";
+"calc.bittering" = "Горечь (формула Тинсета)";
+"calc.brix" = "Рефрактометр (Brix)";
+
+"calc.metrics.litres" = "Литры";
+"calc.metrics.millilitres" = "Миллилитры";
+"calc.metrics.decalitres" = "Декалитры";
+"calc.metrics.hectolitres" = "Гектолитры";
+"calc.metrics.enggallon" = "Англ. галлоны";
+"calc.metrics.engunc" = "Англ. жидкие унции";
+"calc.metrics.engpint" = "Англ. пинты";
+"calc.metrics.usgallon" = "Амер. галлоны";
+"calc.metrics.usunc" = "Амер. жидкие унции";
+"calc.metrics.uspint" = "Амер. пинты";
+"calc.metrics.gramm" = "Граммы";
+"calc.metrics.kilogramm" = "Килограммы";
+"calc.metrics.unc" = "Сыпучие унции";
+"calc.metrics.funt" = "Фунты";
+"calc.metrics.celsius" = "Градусы Цельсия (°C)";
+"calc.metrics.fahrenheit" = "Градусы Фаренгейта (°F)";
+"calc.metrics.kelvin" = "Градусы Кельвина (K)";
+
+"metrics.volume" = "Объем";
+"metrics.weight" = "Вес";
+"metrics.temperature" = "Температура";
+
+"calc.gravity.plato" = "°Plato";
+"calc.gravity.kgl" = "Кг/л";
+
+"calc.alcohol.table.input" = "Плотность";
+"calc.alcohol.table.result" = "Алкоголь";
+"calc.alcohol.table.plato.begin" = "Начальная плотность";
+"calc.alcohol.table.plato.end" = "Конечная плотность";
+"calc.alcohol.table.kgl.begin" = "Начальная плотность";
+"calc.alcohol.table.kgl.end" = "Конечная плотность";
+"calc.alcohol.table.abv" = "Алкоголь";
+
+"calc.alcohol.formula.input" = "Плотность";
+"calc.alcohol.formula.result" = "Алкоголь";
+"calc.alcohol.formula.plato.begin" = "Начальная плотность";
+"calc.alcohol.formula.temp.begin" = "Начальная температура";
+"calc.alcohol.formula.plato.end" = "Конечная плотность";
+"calc.alcohol.formula.temp.end" = "Конечная температура";
+"calc.alcohol.formula.abv" = "Алкоголь";
+
+"calc.brixes.gravity.input" = "Показания";
+"calc.brixes.gravity.output" = "Расчет";
+"calc.brixes.gravity.ob" = "НП в Brix";
+"calc.brixes.gravity.fb" = "КП в Brix";
+"calc.brixes.gravity.og" = "НП";
+"calc.brixes.gravity.fg" = "КП";
+"calc.brixes.gravity.abv" = "Алкоголь";
+"calc.brixes.gravity.kpd" = "Коэффициент подстройки";
+
+"calc.calorie.input" = "Параметры пива";
+"calc.calorie.result" = "Калорийность";
+"calc.calorie.volume" = "Общий объём";
+"calc.calorie.og" = "Начальная плотность";
+"calc.calorie.fg" = "Конечная плотность";
+"calc.calorie.general" = "Общая";
+"calc.calorie.100g" = "В 100 мл";
+
+"calc.bittering.input" = "Охмеление";
+"calc.bittering.output" = "Горечь пива";
+"calc.bittering.volume.litres" = "Объем сусла, л";
+"calc.bittering.volume.gal" = "Объем сусла, галлонов";
+"calc.bittering.gravity.sg" = "Плотность сусла (1.xxx)";
+"calc.bittering.gravity.plato" = "Плотность сусла (°Plato)";
+"calc.bittering.hop.param.weight.oz" = "Вес, унций";
+"calc.bittering.hop.param.weight.gram" = "Вес, грамм";
+"calc.bittering.hop.param.alpha" = "Альфа, %";
+"calc.bittering.hop.param.min" = "Кипячение, мин";
+"calc.bittering.hop1.params" = "Параметры хмеля 1";
+"calc.bittering.hop2.params" = "Параметры хмеля 2";
+"calc.bittering.hop3.params" = "Параметры хмеля 3";
+"calc.bittering.hop4.params" = "Параметры хмеля 4";
+"calc.bittering.hop5.params" = "Параметры хмеля 5";
+"calc.bittering.result" = "Общая горечь";
+"calc.bittering.result.hop1" = "Горечь хмеля 1";
+"calc.bittering.result.hop2" = "Горечь хмеля 2";
+"calc.bittering.result.hop3" = "Горечь хмеля 3";
+"calc.bittering.result.hop4" = "Горечь хмеля 4";
+"calc.bittering.result.hop5" = "Горечь хмеля 5";
+
+"menu.right.button" = "О программе";
+
+"button.close" = "Закрыть";
+
+"about.title" = "О программе";
+"about.label.email" = "Будем рады вашему отзыву по адресу:";
+"about.label.copyright" = "©\nРазработка - Илья Хохлов\nДизайн - Илья Хохлов и Demid";
+"about.alert.email.cant.send.title" = "Почтовый клиент не настроен";
+"about.alert.email.cant.send.message" = "Адрес скопирован в буфер обмена";
+
+"OK" = "OK";
+
+"mail.subject" = "[Отзыв]";
+
+"segment.units.plato" = "°Plato";
+"segment.units.gravity" = "Плотность (1.xxx)";
+"segment.units.celsii" = "°C";
+"segment.units.farenheit" = "°F";
+"segment.units.litres" = "Литры";
+"segment.units.gallons" = "Амер. галлоны";
+"segment.refractometer.brix" = "Brix";
+"segment.refractometer.gravity" = "Последние измерения";
+"segment.units.metric" = "Метрические единицы";
+"segment.units.us" = "Американские единицы";
+
+"instruction.title" = "О калькуляторе";
