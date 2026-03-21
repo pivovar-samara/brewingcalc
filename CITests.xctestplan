@@ -1,0 +1,30 @@
+{
+  "configurations" : [
+    {
+      "id" : "AF5E9F97-832B-4685-B255-3BFF2E219DC3",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "performanceAntipatternCheckerEnabled" : true,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:BrewCalc.xcodeproj",
+      "identifier" : "A0099B9418F4882E0054F850",
+      "name" : "BrewCalc"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:BrewCalc.xcodeproj",
+        "identifier" : "484212C02F6EB5A90009A582",
+        "name" : "BrewCalcTests"
+      }
+    }
+  ],
+  "version" : 1
+}

@@ -1,0 +1,31 @@
+{
+  "configurations" : [
+    {
+      "id" : "CCDB6EA2-7BD8-44B1-A015-27F80FBB5C38",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "testTimeoutsEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:BrewCalc.xcodeproj",
+        "identifier" : "484212E62F6EB6220009A582",
+        "name" : "BrewCalcUITests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:BrewCalc.xcodeproj",
+        "identifier" : "484212C02F6EB5A90009A582",
+        "name" : "BrewCalcTests"
+      }
+    }
+  ],
+  "version" : 1
+}

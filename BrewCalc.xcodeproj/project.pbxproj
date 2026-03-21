@@ -31,6 +31,8 @@
 		484212942F6EB5110009A582 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		484212C12F6EB5A90009A582 /* BrewCalcTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BrewCalcTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		484212E72F6EB6220009A582 /* BrewCalcUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BrewCalcUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		484215082F6EC1C20009A582 /* CITests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = CITests.xctestplan; sourceTree = "<group>"; };
+		484215092F6EC1E10009A582 /* FullTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = FullTests.xctestplan; sourceTree = "<group>"; };
 		A0099B9518F4882E0054F850 /* BrewCalc.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BrewCalc.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -129,6 +131,8 @@
 		A0099B8C18F4882E0054F850 = {
 			isa = PBXGroup;
 			children = (
+				484215082F6EC1C20009A582 /* CITests.xctestplan */,
+				484215092F6EC1E10009A582 /* FullTests.xctestplan */,
 				484212842F6EB5110009A582 /* BrewCalc */,
 				484212852F6EB5110009A582 /* BrewCalc-Info.plist */,
 				4842128E2F6EB5110009A582 /* BrewCalcTests */,
