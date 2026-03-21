@@ -39,7 +39,7 @@ struct CalculatorCategory: Identifiable, Sendable {
             CalculatorCategory(
                 localizedName: l("calc.brix"),
                 calculators: [BrixCalculatorModel()],
-                instructionFilename: isRussian ? "instr_brix_ru" : "instr_brix_en"
+                instructionFilename: l("instruction.brix.filename")
             ),
             CalculatorCategory(
                 localizedName: l("calc.bittering"),
