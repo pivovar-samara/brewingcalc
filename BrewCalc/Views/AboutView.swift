@@ -19,12 +19,6 @@ struct AboutView: View {
             .tint(.brewCalcAccent)
 
             Spacer()
-
-            Text(l("about.label.copyright"))
-                .font(.footnote)
-                .multilineTextAlignment(.center)
-                .foregroundStyle(.secondary)
-                .padding(.bottom, 24)
         }
         .padding(.horizontal, 32)
         .navigationTitle(l("about.title"))
