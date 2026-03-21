@@ -104,7 +104,6 @@
 
 "about.title" = "About";
 "about.label.email" = "Looking forward to your feedback at:";
-"about.label.copyright" = "©\nDevelopment - Ilya Khokhlov\nDesign - Ilya Khokhlov & Demid";
 "about.alert.email.cant.send.title" = "Mail app not configured";
 "about.alert.email.cant.send.message" = "Email address has been copied to the clipboard";
 
