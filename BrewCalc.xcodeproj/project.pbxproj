@@ -75,11 +75,29 @@
 			);
 			target = 484212E62F6EB6220009A582 /* BrewCalcUITests */;
 		};
+		484215B12F6EF6840009A582 /* Exceptions for "BrewCalc" folder in "BrewCalcTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Resources/LaunchScreen.storyboard,
+			);
+			target = 484212C02F6EB5A90009A582 /* BrewCalcTests */;
+		};
+		484215B22F6EF6840009A582 /* Exceptions for "BrewCalc" folder in "BrewCalcUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Resources/LaunchScreen.storyboard,
+			);
+			target = 484212E62F6EB6220009A582 /* BrewCalcUITests */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		484212842F6EB5110009A582 /* BrewCalc */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				484215B12F6EF6840009A582 /* Exceptions for "BrewCalc" folder in "BrewCalcTests" target */,
+				484215B22F6EF6840009A582 /* Exceptions for "BrewCalc" folder in "BrewCalcUITests" target */,
+			);
 			path = BrewCalc;
 			sourceTree = "<group>";
 		};
