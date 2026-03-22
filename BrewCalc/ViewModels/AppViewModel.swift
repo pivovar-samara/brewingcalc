@@ -4,10 +4,19 @@ import SwiftUI
 @MainActor
 final class AppViewModel {
     var categories: [CalculatorCategory]
-    var selectedCategoryID: CalculatorCategory.ID?
+    var selectedCategoryID: CalculatorCategory.ID? {
+        didSet {
+            guard let id = selectedCategoryID,
+                  let category = categories.first(where: { $0.id == id }) else { return }
+            analytics.track(.calculatorOpened(categoryName: category.localizedName))
+        }
+    }
     var showAbout = false
 
-    init() {
+    private let analytics: any AnalyticsService
+
+    init(analytics: any AnalyticsService = NoOpAnalyticsService()) {
+        self.analytics = analytics
         self.categories = CalculatorCategory.allCategories()
     }
 
@@ -20,5 +29,13 @@ final class AppViewModel {
         if let index = categories.firstIndex(where: { $0.id == category.id }) {
             categories[index] = category
         }
+    }
+
+    func trackAppOpened() {
+        analytics.track(.appOpened)
+    }
+
+    func makeDetailViewModel(for category: CalculatorCategory) -> CalculatorDetailViewModel {
+        CalculatorDetailViewModel(category: category, analytics: analytics)
     }
 }

@@ -12,8 +12,11 @@ final class CalculatorDetailViewModel {
         "BrixCalculatorModel", "BitteringCalculator"
     ]
 
-    init(category: CalculatorCategory) {
+    private let analytics: any AnalyticsService
+
+    init(category: CalculatorCategory, analytics: any AnalyticsService = NoOpAnalyticsService()) {
         self.category = category
+        self.analytics = analytics
         for index in category.calculators.indices {
             let name = String(describing: type(of: category.calculators[index]))
             guard persistableCalculatorNames.contains(name) else { continue }
@@ -55,6 +58,15 @@ final class CalculatorDetailViewModel {
         CalculatorPersistence.save(inputs: calculator.inputs, forCalculatorNamed: name)
     }
 
+    private func trackCalculation(calculatorIndex: Int) {
+        guard calculatorIndex < category.calculators.count else { return }
+        let calculatorName = String(describing: type(of: category.calculators[calculatorIndex]))
+        analytics.track(.calculationPerformed(
+            calculatorName: calculatorName,
+            categoryName: category.localizedName
+        ))
+    }
+
     var hasInstructions: Bool {
         guard let filename = category.instructionFilename else { return false }
         return !filename.isEmpty
@@ -73,6 +85,7 @@ final class CalculatorDetailViewModel {
         calculator.calculate(changedIndex: inputIndex)
         category.calculators[calculatorIndex] = calculator
         persistIfNeeded(calculator)
+        trackCalculation(calculatorIndex: calculatorIndex)
     }
 
     func updateThreeNumberInput(calculatorIndex: Int, inputIndex: Int, numberIndex: Int, value: Double) {
@@ -98,6 +111,7 @@ final class CalculatorDetailViewModel {
         calculator.calculate(changedIndex: inputIndex)
         category.calculators[calculatorIndex] = calculator
         persistIfNeeded(calculator)
+        trackCalculation(calculatorIndex: calculatorIndex)
     }
 
     func updateSegment(calculatorIndex: Int, inputIndex: Int, selectedIndex: Int) {
@@ -112,5 +126,6 @@ final class CalculatorDetailViewModel {
         calculator.calculate(changedIndex: inputIndex)
         category.calculators[calculatorIndex] = calculator
         persistIfNeeded(calculator)
+        trackCalculation(calculatorIndex: calculatorIndex)
     }
 }
