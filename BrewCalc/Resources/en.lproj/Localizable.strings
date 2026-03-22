@@ -123,3 +123,4 @@
 "segment.units.us" = "US units";
 
 "instruction.title" = "About calculator";
+"instruction.brix.filename" = "instr_brix_en";

@@ -14,6 +14,7 @@ struct ContentView: View {
                         viewModel.updateCategory(updated)
                     }
                 )
+                .id(category.id)
             } else {
                 ContentUnavailableView(
                     l("calcs"),

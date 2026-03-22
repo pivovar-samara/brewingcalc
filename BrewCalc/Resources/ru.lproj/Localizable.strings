@@ -123,3 +123,4 @@
 "segment.units.us" = "Американские единицы";
 
 "instruction.title" = "О калькуляторе";
+"instruction.brix.filename" = "instr_brix_ru";

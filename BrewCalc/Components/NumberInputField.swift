@@ -24,7 +24,7 @@ struct NumberInputField: View {
                 .focused($isFocused)
                 .onChange(of: text) {
                     if isFocused {
-                        let parsed = Double(text) ?? 0.0
+                        let parsed = Double(text) ?? Double(text.replacingOccurrences(of: ",", with: ".")) ?? 0.0
                         value = parsed
                         onValueChanged?()
                     }
