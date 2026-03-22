@@ -6,8 +6,25 @@ final class CalculatorDetailViewModel {
     var category: CalculatorCategory
     var showInstruction = false
 
+    private let persistableCalculatorNames: Set<String> = [
+        "GravityConverter", "VolumeConverter", "WeightConverter", "TemperatureConverter"
+    ]
+
     init(category: CalculatorCategory) {
         self.category = category
+        for index in category.calculators.indices {
+            let name = String(describing: type(of: category.calculators[index]))
+            guard persistableCalculatorNames.contains(name) else { continue }
+            var calculator = category.calculators[index]
+            CalculatorPersistence.restore(into: &calculator.inputs, forCalculatorNamed: name)
+            self.category.calculators[index] = calculator
+        }
+    }
+
+    private func persistIfNeeded(_ calculator: any BrewCalculator) {
+        let name = String(describing: type(of: calculator))
+        guard persistableCalculatorNames.contains(name) else { return }
+        CalculatorPersistence.save(inputs: calculator.inputs, forCalculatorNamed: name)
     }
 
     var hasInstructions: Bool {
@@ -27,6 +44,7 @@ final class CalculatorDetailViewModel {
 
         calculator.calculate(changedIndex: inputIndex)
         category.calculators[calculatorIndex] = calculator
+        persistIfNeeded(calculator)
     }
 
     func updateThreeNumberInput(calculatorIndex: Int, inputIndex: Int, numberIndex: Int, value: Double) {
@@ -51,6 +69,7 @@ final class CalculatorDetailViewModel {
 
         calculator.calculate(changedIndex: inputIndex)
         category.calculators[calculatorIndex] = calculator
+        persistIfNeeded(calculator)
     }
 
     func updateSegment(calculatorIndex: Int, inputIndex: Int, selectedIndex: Int) {
@@ -64,5 +83,6 @@ final class CalculatorDetailViewModel {
 
         calculator.calculate(changedIndex: inputIndex)
         category.calculators[calculatorIndex] = calculator
+        persistIfNeeded(calculator)
     }
 }

@@ -34,9 +34,10 @@ struct GravityConverter: BrewCalculator {
 
     init() {
         inputs = [
-            .number(NumberInput(title: l("calc.gravity.plato"), numberOfDigits: 2)),
+            .number(NumberInput(title: l("calc.gravity.plato"), value: 12.0, numberOfDigits: 2)),
             .number(NumberInput(title: l("calc.gravity.kgl"))),
         ]
+        calculate(changedIndex: 0)
     }
 
     mutating func calculate(changedIndex: Int) {
@@ -71,7 +72,7 @@ struct VolumeConverter: BrewCalculator {
 
     init() {
         inputs = [
-            .number(NumberInput(title: l("calc.metrics.litres"))),
+            .number(NumberInput(title: l("calc.metrics.litres"), value: 1.0)),
             .number(NumberInput(title: l("calc.metrics.decalitres"), numberOfDigits: 4)),
             .number(NumberInput(title: l("calc.metrics.hectolitres"), numberOfDigits: 5)),
             .number(NumberInput(title: l("calc.metrics.millilitres"), numberOfDigits: 0)),
@@ -82,6 +83,7 @@ struct VolumeConverter: BrewCalculator {
             .number(NumberInput(title: l("calc.metrics.usunc"), numberOfDigits: 2)),
             .number(NumberInput(title: l("calc.metrics.uspint"))),
         ]
+        calculate(changedIndex: 0)
     }
 
     mutating func calculate(changedIndex: Int) {
@@ -107,11 +109,12 @@ struct WeightConverter: BrewCalculator {
 
     init() {
         inputs = [
-            .number(NumberInput(title: l("calc.metrics.kilogramm"))),
+            .number(NumberInput(title: l("calc.metrics.kilogramm"), value: 1.0)),
             .number(NumberInput(title: l("calc.metrics.gramm"), numberOfDigits: 0)),
             .number(NumberInput(title: l("calc.metrics.unc"), numberOfDigits: 2)),
             .number(NumberInput(title: l("calc.metrics.funt"))),
         ]
+        calculate(changedIndex: 0)
     }
 
     mutating func calculate(changedIndex: Int) {
@@ -137,10 +140,11 @@ struct TemperatureConverter: BrewCalculator {
 
     init() {
         inputs = [
-            .number(NumberInput(title: l("calc.metrics.celsius"), numberOfDigits: 1)),
+            .number(NumberInput(title: l("calc.metrics.celsius"), value: 20.0, numberOfDigits: 1)),
             .number(NumberInput(title: l("calc.metrics.fahrenheit"), numberOfDigits: 1)),
             .number(NumberInput(title: l("calc.metrics.kelvin"), numberOfDigits: 1)),
         ]
+        calculate(changedIndex: 0)
     }
 
     mutating func calculate(changedIndex: Int) {
