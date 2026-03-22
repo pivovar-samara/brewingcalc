@@ -40,17 +40,17 @@ struct ThreeNumberInputGroup: View {
         .onChange(of: number3.value) { if focused != 3 { text3 = format(number3) } }
         .onChange(of: text1) {
             guard focused == 1 else { return }
-            number1.value = Double(text1) ?? 0.0
+            number1.value = parseDouble(text1)
             onValueChanged?()
         }
         .onChange(of: text2) {
             guard focused == 2 else { return }
-            number2.value = Double(text2) ?? 0.0
+            number2.value = parseDouble(text2)
             onValueChanged?()
         }
         .onChange(of: text3) {
             guard focused == 3 else { return }
-            number3.value = Double(text3) ?? 0.0
+            number3.value = parseDouble(text3)
             onValueChanged?()
         }
     }
@@ -74,6 +74,11 @@ struct ThreeNumberInputGroup: View {
     }
 
     private func reformatText(_ text: String, digits: Int) -> String {
-        String(format: "%.\(digits)f", Double(text) ?? 0.0)
+        String(format: "%.\(digits)f", parseDouble(text))
+    }
+
+    private func parseDouble(_ text: String) -> Double {
+        if let value = Double(text) { return value }
+        return Double(text.replacingOccurrences(of: ",", with: ".")) ?? 0.0
     }
 }
