@@ -22,12 +22,6 @@ final class CalculatorDetailViewModel {
             if calculator.outputs.isEmpty {
                 // Simple converters: direct restore, all state lives in inputs
                 CalculatorPersistence.restore(into: &calculator.inputs, forCalculatorNamed: name)
-            } else if name == "BrixCalculatorModel" {
-                // Brix has a complex input/output swap on mode change (seg1); two-phase
-                // would corrupt the swap. numberOfDigits for SG is handled in its
-                // computation path instead, so simple restore + recalculate is correct.
-                CalculatorPersistence.restore(into: &calculator.inputs, forCalculatorNamed: name)
-                calculator.calculate(changedIndex: calculator.inputs.count - 1)
             } else {
                 // Two-phase restore for Calorie, ABVTable, ABVFormula, Bittering:
                 // Phase 1 — apply saved segment selections via calculate() so that

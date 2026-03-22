@@ -560,13 +560,21 @@ struct BrixCalculatorModel: BrewCalculator {
                         value: round(100.0 * ogbrix.value * koef) / 100.0,
                         numberOfDigits: ogbrix.numberOfDigits
                     ))
-                    outputs[1] = swapped
+                    // The field moves back to the output section — mark it non-editable
+                    if case .number(var fg) = swapped {
+                        fg.isEditable = false
+                        outputs[1] = .number(fg)
+                    }
                 }
             case 1:
                 // Switching TO Final measurements mode: swap input[3] to output[1], output[1] to input[3]
                 if case .number(let ogbrix) = inputs[3] {
                     let swapped = outputs[1]
-                    inputs[3] = swapped
+                    // The field moves into the input section — mark it editable
+                    if case .number(var fg) = swapped {
+                        fg.isEditable = true
+                        inputs[3] = .number(fg)
+                    }
                     outputs[1] = .number(ogbrix)
                 }
             default: break
