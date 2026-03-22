@@ -7,7 +7,9 @@ final class CalculatorDetailViewModel {
     var showInstruction = false
 
     private let persistableCalculatorNames: Set<String> = [
-        "GravityConverter", "VolumeConverter", "WeightConverter", "TemperatureConverter"
+        "GravityConverter", "VolumeConverter", "WeightConverter", "TemperatureConverter",
+        "CalorieCalculatorModel", "ABVTableCalculator", "ABVFormulaCalculator",
+        "BrixCalculatorModel", "BitteringCalculator"
     ]
 
     init(category: CalculatorCategory) {
@@ -16,7 +18,39 @@ final class CalculatorDetailViewModel {
             let name = String(describing: type(of: category.calculators[index]))
             guard persistableCalculatorNames.contains(name) else { continue }
             var calculator = category.calculators[index]
-            CalculatorPersistence.restore(into: &calculator.inputs, forCalculatorNamed: name)
+
+            if calculator.outputs.isEmpty {
+                // Simple converters: direct restore, all state lives in inputs
+                CalculatorPersistence.restore(into: &calculator.inputs, forCalculatorNamed: name)
+            } else if name == "BrixCalculatorModel" {
+                // Brix has a complex input/output swap on mode change (seg1); two-phase
+                // would corrupt the swap. numberOfDigits for SG is handled in its
+                // computation path instead, so simple restore + recalculate is correct.
+                CalculatorPersistence.restore(into: &calculator.inputs, forCalculatorNamed: name)
+                calculator.calculate(changedIndex: calculator.inputs.count - 1)
+            } else {
+                // Two-phase restore for Calorie, ABVTable, ABVFormula, Bittering:
+                // Phase 1 — apply saved segment selections via calculate() so that
+                //            field titles and numberOfDigits are updated correctly.
+                let defaults = UserDefaults.standard
+                for inputIndex in calculator.inputs.indices {
+                    guard case .segmented(let s) = calculator.inputs[inputIndex] else { continue }
+                    let k = "persistence.\(name).input.\(inputIndex)"
+                    guard defaults.object(forKey: k) != nil else { continue }
+                    let savedIndex = defaults.integer(forKey: k)
+                    guard s.selectedIndex != savedIndex else { continue }
+                    var updated = s
+                    updated.selectedIndex = savedIndex
+                    calculator.inputs[inputIndex] = .segmented(updated)
+                    calculator.calculate(changedIndex: inputIndex)
+                }
+                // Phase 2 — override number values with the saved values (the segment
+                //            switch above converted init defaults; we replace them here).
+                CalculatorPersistence.restoreNumbers(into: &calculator.inputs, forCalculatorNamed: name)
+                // Phase 3 — recompute outputs from restored inputs.
+                calculator.calculate(changedIndex: calculator.inputs.count - 1)
+            }
+
             self.category.calculators[index] = calculator
         }
     }

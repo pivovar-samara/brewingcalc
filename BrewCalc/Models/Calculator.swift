@@ -175,14 +175,15 @@ struct CalorieCalculatorModel: BrewCalculator {
         inputs = [
             .segmented(SegmentedInput(segments: [l("segment.units.plato"), l("segment.units.gravity")], selectedIndex: 0)),
             .segmented(SegmentedInput(segments: [l("segment.units.litres"), l("segment.units.gallons")], selectedIndex: 0)),
-            .number(NumberInput(title: l("calc.calorie.volume"), numberOfDigits: 1)),
-            .number(NumberInput(title: l("calc.calorie.og"), numberOfDigits: 2)),
-            .number(NumberInput(title: l("calc.calorie.fg"), numberOfDigits: 2)),
+            .number(NumberInput(title: l("calc.calorie.volume"), value: 20.0, numberOfDigits: 1)),
+            .number(NumberInput(title: l("calc.calorie.og"), value: 12.0, numberOfDigits: 2)),
+            .number(NumberInput(title: l("calc.calorie.fg"), value: 3.0, numberOfDigits: 2)),
         ]
         outputs = [
             .number(NumberInput(title: l("calc.calorie.general"), numberOfDigits: 1, isEditable: false)),
             .number(NumberInput(title: l("calc.calorie.100g"), numberOfDigits: 1, isEditable: false)),
         ]
+        calculate(changedIndex: 4)
     }
 
     mutating func calculate(changedIndex: Int) {
@@ -209,11 +210,13 @@ struct CalorieCalculatorModel: BrewCalculator {
                 if case .number(var og) = inputs[3] {
                     og.value = UnitConverter.Gravity.sgFromPlato(og.value)
                     og.title = l("calc.calorie.og")
+                    og.numberOfDigits = 3
                     inputs[3] = .number(og)
                 }
                 if case .number(var fg) = inputs[4] {
                     fg.value = UnitConverter.Gravity.sgFromPlato(fg.value)
                     fg.title = l("calc.calorie.fg")
+                    fg.numberOfDigits = 3
                     inputs[4] = .number(fg)
                 }
             }
@@ -276,12 +279,13 @@ struct ABVTableCalculator: BrewCalculator {
     init() {
         inputs = [
             .segmented(SegmentedInput(segments: [l("segment.units.plato"), l("segment.units.gravity")], selectedIndex: 0)),
-            .number(NumberInput(title: l("calc.alcohol.table.plato.begin"), numberOfDigits: 2)),
-            .number(NumberInput(title: l("calc.alcohol.table.plato.end"), numberOfDigits: 2)),
+            .number(NumberInput(title: l("calc.alcohol.table.plato.begin"), value: 12.0, numberOfDigits: 2)),
+            .number(NumberInput(title: l("calc.alcohol.table.plato.end"), value: 3.0, numberOfDigits: 2)),
         ]
         outputs = [
             .number(NumberInput(title: l("calc.alcohol.table.abv"), numberOfDigits: 2, isEditable: false)),
         ]
+        calculate(changedIndex: 2)
     }
 
     mutating func calculate(changedIndex: Int) {
@@ -305,11 +309,13 @@ struct ABVTableCalculator: BrewCalculator {
                 if case .number(var og) = inputs[1] {
                     og.value = UnitConverter.Gravity.sgFromPlato(og.value)
                     og.title = l("calc.alcohol.table.kgl.begin")
+                    og.numberOfDigits = 3
                     inputs[1] = .number(og)
                 }
                 if case .number(var fg) = inputs[2] {
                     fg.value = UnitConverter.Gravity.sgFromPlato(fg.value)
                     fg.title = l("calc.alcohol.table.kgl.end")
+                    fg.numberOfDigits = 3
                     inputs[2] = .number(fg)
                 }
             }
@@ -346,14 +352,15 @@ struct ABVFormulaCalculator: BrewCalculator {
         inputs = [
             .segmented(SegmentedInput(segments: [l("segment.units.plato"), l("segment.units.gravity")], selectedIndex: 0)),
             .segmented(SegmentedInput(segments: [l("segment.units.celsii"), l("segment.units.farenheit")], selectedIndex: 0)),
-            .number(NumberInput(title: l("calc.alcohol.formula.plato.begin"), numberOfDigits: 2)),
-            .number(NumberInput(title: l("calc.alcohol.formula.temp.begin"), numberOfDigits: 1)),
-            .number(NumberInput(title: l("calc.alcohol.formula.plato.end"), numberOfDigits: 2)),
-            .number(NumberInput(title: l("calc.alcohol.formula.temp.end"), numberOfDigits: 1)),
+            .number(NumberInput(title: l("calc.alcohol.formula.plato.begin"), value: 12.0, numberOfDigits: 2)),
+            .number(NumberInput(title: l("calc.alcohol.formula.temp.begin"), value: 20.0, numberOfDigits: 1)),
+            .number(NumberInput(title: l("calc.alcohol.formula.plato.end"), value: 3.0, numberOfDigits: 2)),
+            .number(NumberInput(title: l("calc.alcohol.formula.temp.end"), value: 20.0, numberOfDigits: 1)),
         ]
         outputs = [
             .number(NumberInput(title: l("calc.alcohol.formula.abv"), numberOfDigits: 2, isEditable: false)),
         ]
+        calculate(changedIndex: 5)
     }
 
     mutating func calculate(changedIndex: Int) {
@@ -378,11 +385,13 @@ struct ABVFormulaCalculator: BrewCalculator {
                 if case .number(var og) = inputs[2] {
                     og.value = UnitConverter.Gravity.sgFromPlato(og.value)
                     og.title = l("calc.alcohol.formula.plato.begin")
+                    og.numberOfDigits = 3
                     inputs[2] = .number(og)
                 }
                 if case .number(var fg) = inputs[4] {
                     fg.value = UnitConverter.Gravity.sgFromPlato(fg.value)
                     fg.title = l("calc.alcohol.formula.plato.end")
+                    fg.numberOfDigits = 3
                     inputs[4] = .number(fg)
                 }
             }
@@ -459,14 +468,15 @@ struct BrixCalculatorModel: BrewCalculator {
             .segmented(SegmentedInput(segments: [l("segment.units.plato"), l("segment.units.gravity")], selectedIndex: 0)),
             .segmented(SegmentedInput(segments: [l("segment.refractometer.brix"), l("segment.refractometer.gravity")], selectedIndex: 0)),
             .number(NumberInput(title: l("calc.brixes.gravity.kpd"), value: 1.04, numberOfDigits: 2)),
-            .number(NumberInput(title: l("calc.brixes.gravity.ob"), numberOfDigits: 2)),
-            .number(NumberInput(title: l("calc.brixes.gravity.fb"), numberOfDigits: 2)),
+            .number(NumberInput(title: l("calc.brixes.gravity.ob"), value: 12.0, numberOfDigits: 2)),
+            .number(NumberInput(title: l("calc.brixes.gravity.fb"), value: 3.0, numberOfDigits: 2)),
         ]
         outputs = [
             .number(NumberInput(title: l("calc.brixes.gravity.og"), numberOfDigits: 2, isEditable: false)),
             .number(NumberInput(title: l("calc.brixes.gravity.fg"), numberOfDigits: 2, isEditable: false)),
             .number(NumberInput(title: l("calc.brixes.gravity.abv"), numberOfDigits: 2, isEditable: false)),
         ]
+        calculate(changedIndex: 4)
     }
 
     mutating func calculate(changedIndex: Int) {
@@ -497,10 +507,12 @@ struct BrixCalculatorModel: BrewCalculator {
                         // Convert outputs to SG
                         if case .number(var og) = outputs[0] {
                             og.value = UnitConverter.Gravity.sgFromPlato(og.value)
+                            og.numberOfDigits = 3
                             outputs[0] = .number(og)
                         }
                         if case .number(var fg) = outputs[1] {
                             fg.value = UnitConverter.Gravity.sgFromPlato(fg.value)
+                            fg.numberOfDigits = 3
                             outputs[1] = .number(fg)
                         }
                     }
@@ -522,10 +534,12 @@ struct BrixCalculatorModel: BrewCalculator {
                         // Convert to SG
                         if case .number(var fgInput) = inputs[3] {
                             fgInput.value = UnitConverter.Gravity.sgFromPlato(fgInput.value)
+                            fgInput.numberOfDigits = 3
                             inputs[3] = .number(fgInput)
                         }
                         if case .number(var og) = outputs[0] {
                             og.value = UnitConverter.Gravity.sgFromPlato(og.value)
+                            og.numberOfDigits = 3
                             outputs[0] = .number(og)
                         }
                     }
@@ -604,6 +618,15 @@ struct BrixCalculatorModel: BrewCalculator {
                     fg.numberOfDigits = 2
                     outputs[1] = .number(fg)
                 }
+            } else {
+                if case .number(var og) = outputs[0] {
+                    og.numberOfDigits = 3
+                    outputs[0] = .number(og)
+                }
+                if case .number(var fg) = outputs[1] {
+                    fg.numberOfDigits = 3
+                    outputs[1] = .number(fg)
+                }
             }
 
         case 1:
@@ -636,6 +659,11 @@ struct BrixCalculatorModel: BrewCalculator {
                     og.numberOfDigits = 2
                     outputs[0] = .number(og)
                 }
+            } else {
+                if case .number(var og) = outputs[0] {
+                    og.numberOfDigits = 3
+                    outputs[0] = .number(og)
+                }
             }
 
         default: break
@@ -657,13 +685,13 @@ struct BitteringCalculator: BrewCalculator {
         inputs = [
             .segmented(SegmentedInput(segments: [l("segment.units.metric"), l("segment.units.us")], selectedIndex: 0)),
             .segmented(SegmentedInput(segments: [l("segment.units.plato"), l("segment.units.gravity")], selectedIndex: 0)),
-            .number(NumberInput(title: l("calc.bittering.volume.litres"), numberOfDigits: 1)),
-            .number(NumberInput(title: l("calc.bittering.gravity.plato"), numberOfDigits: 2)),
+            .number(NumberInput(title: l("calc.bittering.volume.litres"), value: 20.0, numberOfDigits: 1)),
+            .number(NumberInput(title: l("calc.bittering.gravity.plato"), value: 12.0, numberOfDigits: 2)),
             .threeNumbers(ThreeNumbersInput(
                 title: l("calc.bittering.hop1.params"),
-                number1: NumberInput(title: l("calc.bittering.hop.param.weight.gram"), numberOfDigits: 1),
-                number2: NumberInput(title: l("calc.bittering.hop.param.alpha"), numberOfDigits: 1),
-                number3: NumberInput(title: l("calc.bittering.hop.param.min"), numberOfDigits: 1)
+                number1: NumberInput(title: l("calc.bittering.hop.param.weight.gram"), value: 20.0, numberOfDigits: 1),
+                number2: NumberInput(title: l("calc.bittering.hop.param.alpha"), value: 5.0, numberOfDigits: 1),
+                number3: NumberInput(title: l("calc.bittering.hop.param.min"), value: 60.0, numberOfDigits: 1)
             )),
             .threeNumbers(ThreeNumbersInput(
                 title: l("calc.bittering.hop2.params"),
@@ -698,6 +726,7 @@ struct BitteringCalculator: BrewCalculator {
             .number(NumberInput(title: l("calc.bittering.result.hop4"), numberOfDigits: 1, isEditable: false)),
             .number(NumberInput(title: l("calc.bittering.result.hop5"), numberOfDigits: 1, isEditable: false)),
         ]
+        calculate(changedIndex: 8)
     }
 
     mutating func calculate(changedIndex: Int) {
@@ -750,6 +779,7 @@ struct BitteringCalculator: BrewCalculator {
                 } else {
                     grav.value = UnitConverter.Gravity.sgFromPlato(grav.value)
                     grav.title = l("calc.bittering.gravity.sg")
+                    grav.numberOfDigits = 3
                 }
                 inputs[3] = .number(grav)
             }
