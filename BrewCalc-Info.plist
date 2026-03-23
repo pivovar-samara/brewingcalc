@@ -39,5 +39,19 @@
 	</array>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>FirebaseAutomaticScreenReportingEnabled</key>
+	<false/>
+	<key>GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_PERSONALIZATION_SIGNALS</key>
+	<false/>
+	<key>FIREBASE_API_KEY</key>
+	<string>$(FIREBASE_API_KEY)</string>
+	<key>FIREBASE_APP_ID</key>
+	<string>$(FIREBASE_APP_ID)</string>
+	<key>FIREBASE_GCM_SENDER_ID</key>
+	<string>$(FIREBASE_GCM_SENDER_ID)</string>
+	<key>FIREBASE_PROJECT_ID</key>
+	<string>$(FIREBASE_PROJECT_ID)</string>
+	<key>FIREBASE_STORAGE_BUCKET</key>
+	<string>$(FIREBASE_STORAGE_BUCKET)</string>
 </dict>
 </plist>

@@ -6,7 +6,8 @@ final class AppViewModel {
     var categories: [CalculatorCategory]
     var selectedCategoryID: CalculatorCategory.ID? {
         didSet {
-            guard let id = selectedCategoryID,
+            guard selectedCategoryID != oldValue,
+                  let id = selectedCategoryID,
                   let category = categories.first(where: { $0.id == id }) else { return }
             analytics.track(.calculatorOpened(categoryName: category.localizedName))
         }

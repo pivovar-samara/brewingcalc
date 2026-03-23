@@ -13,6 +13,7 @@ final class CalculatorDetailViewModel {
     ]
 
     private let analytics: any AnalyticsService
+    private nonisolated(unsafe) var pendingTrackTask: Task<Void, Never>?
 
     init(category: CalculatorCategory, analytics: any AnalyticsService = NoOpAnalyticsService()) {
         self.category = category
@@ -61,10 +62,21 @@ final class CalculatorDetailViewModel {
     private func trackCalculation(calculatorIndex: Int) {
         guard calculatorIndex < category.calculators.count else { return }
         let calculatorName = String(describing: type(of: category.calculators[calculatorIndex]))
-        analytics.track(.calculationPerformed(
-            calculatorName: calculatorName,
-            categoryName: category.localizedName
-        ))
+        let categoryName = category.localizedName
+
+        pendingTrackTask?.cancel()
+        pendingTrackTask = Task {
+            try? await Task.sleep(for: .seconds(1.5))
+            guard !Task.isCancelled else { return }
+            analytics.track(.calculationPerformed(
+                calculatorName: calculatorName,
+                categoryName: categoryName
+            ))
+        }
+    }
+
+    deinit {
+        pendingTrackTask?.cancel()
     }
 
     var hasInstructions: Bool {

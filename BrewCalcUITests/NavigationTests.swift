@@ -11,6 +11,7 @@ final class NavigationTests: XCTestCase {
     private func launchApp() {
         continueAfterFailure = false
         app = XCUIApplication()
+        app.launchArguments += ["-RunningTests"]
         app.launch()
     }
 

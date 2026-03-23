@@ -64,5 +64,6 @@ fastlane/test_output
 .DS_Store
 
 Configs/Secrets.xcconfig
+GoogleService-Info.plist
 .cursor/
 .claude/

@@ -3,7 +3,5 @@ protocol AnalyticsService: Sendable {
 }
 
 struct NoOpAnalyticsService: AnalyticsService {
-    func track(_ event: AnalyticsEvent) {
-        
-    }
+    func track(_ event: AnalyticsEvent) {}
 }
