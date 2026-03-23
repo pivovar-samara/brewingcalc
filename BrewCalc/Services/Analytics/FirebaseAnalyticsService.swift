@@ -1,5 +1,6 @@
 import FirebaseAnalytics
 import FirebaseCore
+import FirebaseCrashlytics
 
 struct FirebaseAnalyticsService: AnalyticsService {
     init() {
@@ -12,6 +13,12 @@ struct FirebaseAnalyticsService: AnalyticsService {
         options.projectID = info?["FIREBASE_PROJECT_ID"] as? String
         options.storageBucket = info?["FIREBASE_STORAGE_BUCKET"] as? String
         FirebaseApp.configure(options: options)
+
+        // Disable Crashlytics in debug builds (mirrors analytics behaviour).
+        // In release builds it auto-starts after FirebaseApp.configure().
+        #if DEBUG
+        Crashlytics.crashlytics().setCrashlyticsCollectionEnabled(false)
+        #endif
 
         // Debug builds: collection is off unless -FIRAnalyticsDebugEnabled is
         // present in the scheme's launch arguments. That flag also routes events
