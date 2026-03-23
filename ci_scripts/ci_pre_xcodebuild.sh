@@ -13,7 +13,11 @@ set -e
 # The app detects test runs via -RunningTests / XCTestConfigurationFilePath
 # and uses NoOpAnalyticsService, so Firebase is never initialised.
 
-SECRETS_FILE="$CI_PRIMARY_REPOSITORY_PATH/Configs/Secrets.xcconfig"
+# Derive the repo root from the script's location — ci_scripts/ sits directly
+# inside the repo root, so one level up is always correct regardless of which
+# environment variables Xcode Cloud exposes in this context.
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+SECRETS_FILE="$REPO_ROOT/Configs/Secrets.xcconfig"
 
 VARS="FIREBASE_API_KEY FIREBASE_APP_ID FIREBASE_GCM_SENDER_ID FIREBASE_PROJECT_ID FIREBASE_STORAGE_BUCKET"
 
