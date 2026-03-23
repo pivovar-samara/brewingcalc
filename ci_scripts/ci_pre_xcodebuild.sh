@@ -18,6 +18,10 @@ set -e
 # environment variables Xcode Cloud exposes in this context.
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SECRETS_FILE="$REPO_ROOT/Configs/Secrets.xcconfig"
+ 
+# Ensure the directory exists — Secrets.xcconfig is gitignored so git never
+# creates the Configs/ folder on a fresh clone if no other file is committed there.
+mkdir -p "$REPO_ROOT/Configs"
 
 VARS="FIREBASE_API_KEY FIREBASE_APP_ID FIREBASE_GCM_SENDER_ID FIREBASE_PROJECT_ID FIREBASE_STORAGE_BUCKET"
 
