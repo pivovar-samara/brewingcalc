@@ -74,4 +74,16 @@ struct AppViewModelTests {
 
         #expect(spy.trackedEvents == [.aboutOpened])
     }
+
+    @Test("Setting showAbout to true multiple times fires aboutOpened only once")
+    @MainActor
+    func showAboutMultipleTrueAssignmentsDoNotDuplicateEvent() {
+        let spy = SpyAnalyticsService()
+        let vm = AppViewModel(analytics: spy)
+
+        vm.showAbout = true
+        vm.showAbout = true
+
+        #expect(spy.trackedEvents == [.aboutOpened])
+    }
 }

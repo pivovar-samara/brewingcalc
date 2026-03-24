@@ -14,7 +14,7 @@ final class AppViewModel {
     }
     var showAbout = false {
         didSet {
-            if showAbout { analytics.track(.aboutOpened) }
+            if showAbout && oldValue == false { analytics.track(.aboutOpened) }
         }
     }
 
