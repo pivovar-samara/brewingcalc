@@ -106,6 +106,10 @@
 "about.label.email" = "Looking forward to your feedback at:";
 "about.alert.email.cant.send.title" = "Mail app not configured";
 "about.alert.email.cant.send.message" = "Email address has been copied to the clipboard";
+"about.section.contact" = "Contact";
+"about.section.support" = "Support";
+"about.link.support" = "Support";
+"about.link.privacy" = "Privacy Policy";
 
 "OK" = "OK";
 

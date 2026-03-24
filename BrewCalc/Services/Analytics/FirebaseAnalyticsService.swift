@@ -59,6 +59,18 @@ struct FirebaseAnalyticsService: AnalyticsService {
                 "calculator_name": calculatorName,
                 "category_name": categoryName
             ])
+
+        case .aboutOpened:
+            Analytics.logEvent("about_opened", parameters: nil)
+
+        case .emailTapped:
+            Analytics.logEvent("email_tapped", parameters: nil)
+
+        case .supportLinkTapped:
+            Analytics.logEvent("support_link_tapped", parameters: nil)
+
+        case .privacyPolicyTapped:
+            Analytics.logEvent("privacy_policy_tapped", parameters: nil)
         }
     }
 }

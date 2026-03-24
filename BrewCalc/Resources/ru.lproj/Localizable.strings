@@ -106,6 +106,10 @@
 "about.label.email" = "Будем рады вашему отзыву по адресу:";
 "about.alert.email.cant.send.title" = "Почтовый клиент не настроен";
 "about.alert.email.cant.send.message" = "Адрес скопирован в буфер обмена";
+"about.section.contact" = "Контакты";
+"about.section.support" = "Поддержка";
+"about.link.support" = "Поддержка";
+"about.link.privacy" = "Политика конфиденциальности";
 
 "OK" = "OK";
 

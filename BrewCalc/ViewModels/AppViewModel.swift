@@ -12,9 +12,13 @@ final class AppViewModel {
             analytics.track(.calculatorOpened(categoryName: category.localizedName))
         }
     }
-    var showAbout = false
+    var showAbout = false {
+        didSet {
+            if showAbout && oldValue == false { analytics.track(.aboutOpened) }
+        }
+    }
 
-    private let analytics: any AnalyticsService
+    let analytics: any AnalyticsService
 
     init(analytics: any AnalyticsService = NoOpAnalyticsService()) {
         self.analytics = analytics

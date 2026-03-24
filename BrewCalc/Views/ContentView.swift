@@ -26,7 +26,7 @@ struct ContentView: View {
         .tint(.brewCalcAccent)
         .sheet(isPresented: $viewModel.showAbout) {
             NavigationStack {
-                AboutView()
+                AboutView(analytics: viewModel.analytics)
             }
         }
     }
