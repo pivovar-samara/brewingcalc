@@ -15,7 +15,7 @@ final class CalculatorDetailViewModel {
     private let analytics: any AnalyticsService
     private let debounceDelay: Duration
     @ObservationIgnored
-    private nonisolated(unsafe) var pendingTrackTask: Task<Void, Never>?
+    private var pendingTrackTask: Task<Void, Never>?
 
     init(
         category: CalculatorCategory,
@@ -72,7 +72,7 @@ final class CalculatorDetailViewModel {
         let categoryName = category.localizedName
 
         pendingTrackTask?.cancel()
-        pendingTrackTask = Task { [analytics, debounceDelay] in
+        pendingTrackTask = Task { @MainActor [analytics, debounceDelay] in
             try? await Task.sleep(for: debounceDelay)
             guard !Task.isCancelled else { return }
             analytics.track(.calculationPerformed(
@@ -82,6 +82,7 @@ final class CalculatorDetailViewModel {
         }
     }
 
+    @MainActor
     deinit {
         pendingTrackTask?.cancel()
     }

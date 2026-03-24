@@ -21,7 +21,7 @@ xcodebuild test -scheme BrewCalc -destination 'platform=iOS Simulator,name=iPhon
 ```
 
 - The only scheme is `BrewCalc`. `BrewCalcTests` and `BrewCalcUITests` are targets, not schemes — do not use them as the `-scheme` value.
-- No `npm install`, no `pod install`, no `swift package resolve` — there are no external package dependencies to bootstrap.
+- No `npm install`, no `pod install` — SwiftPM packages (Firebase) are resolved automatically by Xcode on first build; no manual bootstrap step is required.
 - `Configs/Secrets.xcconfig` is gitignored. For local builds it may be absent or empty; Firebase is not initialized when running tests (app detects `XCTestConfigurationFilePath` env var or `-RunningTests` launch arg and uses `NoOpAnalyticsService`).
 
 ## Adding New Test Files
