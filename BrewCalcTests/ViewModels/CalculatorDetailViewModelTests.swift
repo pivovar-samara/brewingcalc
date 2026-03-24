@@ -120,17 +120,15 @@ struct CalculatorDetailViewModelTests {
         let category = CalculatorCategory(localizedName: "Gravity", calculators: [GravityConverter()])
         let vm = CalculatorDetailViewModel(category: category, analytics: spy, debounceDelay: .milliseconds(10))
 
-        vm.updateInput(calculatorIndex: 0, inputIndex: 0, value: 10.0)
-        vm.updateInput(calculatorIndex: 0, inputIndex: 0, value: 11.0)
-        vm.updateInput(calculatorIndex: 0, inputIndex: 0, value: 12.0)
-
-        try await Task.sleep(for: .milliseconds(50))
-
-        let calcEvents = spy.trackedEvents.filter {
-            if case .calculationPerformed = $0 { return true }
-            return false
+        await confirmation("single calculationPerformed event after rapid input", expectedCount: 1) { confirm in
+            spy.onTrack = { event in
+                if case .calculationPerformed = event { confirm() }
+            }
+            vm.updateInput(calculatorIndex: 0, inputIndex: 0, value: 10.0)
+            vm.updateInput(calculatorIndex: 0, inputIndex: 0, value: 11.0)
+            vm.updateInput(calculatorIndex: 0, inputIndex: 0, value: 12.0)
+            try? await Task.sleep(for: .milliseconds(500))
         }
-        #expect(calcEvents.count == 1)
     }
 
     @Test("Debounce: emitted event carries correct calculator and category names")
@@ -140,9 +138,13 @@ struct CalculatorDetailViewModelTests {
         let category = CalculatorCategory(localizedName: "Gravity", calculators: [GravityConverter()])
         let vm = CalculatorDetailViewModel(category: category, analytics: spy, debounceDelay: .milliseconds(10))
 
-        vm.updateInput(calculatorIndex: 0, inputIndex: 0, value: 12.0)
-
-        try await Task.sleep(for: .milliseconds(50))
+        await confirmation("calculationPerformed event fired") { confirm in
+            spy.onTrack = { event in
+                if case .calculationPerformed = event { confirm() }
+            }
+            vm.updateInput(calculatorIndex: 0, inputIndex: 0, value: 12.0)
+            try? await Task.sleep(for: .milliseconds(500))
+        }
 
         let expectedName = String(describing: type(of: GravityConverter()))
         #expect(spy.trackedEvents == [.calculationPerformed(calculatorName: expectedName, categoryName: "Gravity")])

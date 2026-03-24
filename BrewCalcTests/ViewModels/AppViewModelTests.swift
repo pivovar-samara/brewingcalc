@@ -6,9 +6,11 @@ import Testing
 @MainActor
 final class SpyAnalyticsService: AnalyticsService {
     private(set) var trackedEvents: [AnalyticsEvent] = []
+    var onTrack: ((AnalyticsEvent) -> Void)?
 
     func track(_ event: AnalyticsEvent) {
         trackedEvents.append(event)
+        onTrack?(event)
     }
 }
 
