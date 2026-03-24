@@ -13,6 +13,7 @@ final class CalculatorDetailViewModel {
     ]
 
     private let analytics: any AnalyticsService
+    @ObservationIgnored
     private nonisolated(unsafe) var pendingTrackTask: Task<Void, Never>?
 
     init(category: CalculatorCategory, analytics: any AnalyticsService = NoOpAnalyticsService()) {
@@ -65,7 +66,7 @@ final class CalculatorDetailViewModel {
         let categoryName = category.localizedName
 
         pendingTrackTask?.cancel()
-        pendingTrackTask = Task {
+        pendingTrackTask = Task { [analytics] in
             try? await Task.sleep(for: .seconds(1.5))
             guard !Task.isCancelled else { return }
             analytics.track(.calculationPerformed(
