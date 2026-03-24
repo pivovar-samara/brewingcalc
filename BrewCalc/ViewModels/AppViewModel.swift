@@ -32,8 +32,8 @@ final class AppViewModel {
         }
     }
 
-    func trackAppOpened() {
-        analytics.track(.appOpened)
+    func trackAppBecameActive() {
+        analytics.track(.appBecameActive)
     }
 
     func makeDetailViewModel(for category: CalculatorCategory) -> CalculatorDetailViewModel {

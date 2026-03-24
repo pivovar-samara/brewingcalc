@@ -26,7 +26,7 @@ struct BrewCalcApp: App {
         }
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
-                appViewModel.trackAppOpened()
+                appViewModel.trackAppBecameActive()
             }
         }
     }

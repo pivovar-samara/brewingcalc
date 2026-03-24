@@ -4,11 +4,13 @@ import FirebaseCrashlytics
 
 struct FirebaseAnalyticsService: AnalyticsService {
     init() {
+        guard FirebaseApp.app() == nil else { return }
         let info = Bundle.main.infoDictionary
-        let options = FirebaseOptions(
-            googleAppID: info?["FIREBASE_APP_ID"] as? String ?? "",
-            gcmSenderID: info?["FIREBASE_GCM_SENDER_ID"] as? String ?? ""
-        )
+        guard
+            let appID = info?["FIREBASE_APP_ID"] as? String, !appID.isEmpty,
+            let senderID = info?["FIREBASE_GCM_SENDER_ID"] as? String, !senderID.isEmpty
+        else { return }
+        let options = FirebaseOptions(googleAppID: appID, gcmSenderID: senderID)
         options.apiKey = info?["FIREBASE_API_KEY"] as? String
         options.projectID = info?["FIREBASE_PROJECT_ID"] as? String
         options.storageBucket = info?["FIREBASE_STORAGE_BUCKET"] as? String
@@ -44,7 +46,7 @@ struct FirebaseAnalyticsService: AnalyticsService {
 
     func track(_ event: AnalyticsEvent) {
         switch event {
-        case .appOpened:
+        case .appBecameActive:
             Analytics.logEvent(AnalyticsEventAppOpen, parameters: nil)
 
         case .calculatorOpened(let categoryName):

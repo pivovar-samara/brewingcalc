@@ -13,12 +13,18 @@ final class CalculatorDetailViewModel {
     ]
 
     private let analytics: any AnalyticsService
+    private let debounceDelay: Duration
     @ObservationIgnored
     private nonisolated(unsafe) var pendingTrackTask: Task<Void, Never>?
 
-    init(category: CalculatorCategory, analytics: any AnalyticsService = NoOpAnalyticsService()) {
+    init(
+        category: CalculatorCategory,
+        analytics: any AnalyticsService = NoOpAnalyticsService(),
+        debounceDelay: Duration = .seconds(1.5)
+    ) {
         self.category = category
         self.analytics = analytics
+        self.debounceDelay = debounceDelay
         for index in category.calculators.indices {
             let name = String(describing: type(of: category.calculators[index]))
             guard persistableCalculatorNames.contains(name) else { continue }
@@ -66,8 +72,8 @@ final class CalculatorDetailViewModel {
         let categoryName = category.localizedName
 
         pendingTrackTask?.cancel()
-        pendingTrackTask = Task { [analytics] in
-            try? await Task.sleep(for: .seconds(1.5))
+        pendingTrackTask = Task { [analytics, debounceDelay] in
+            try? await Task.sleep(for: debounceDelay)
             guard !Task.isCancelled else { return }
             analytics.track(.calculationPerformed(
                 calculatorName: calculatorName,

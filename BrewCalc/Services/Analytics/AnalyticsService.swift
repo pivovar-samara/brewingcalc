@@ -1,5 +1,5 @@
 protocol AnalyticsService: Sendable {
-    func track(_ event: AnalyticsEvent)
+    @MainActor func track(_ event: AnalyticsEvent)
 }
 
 struct NoOpAnalyticsService: AnalyticsService {

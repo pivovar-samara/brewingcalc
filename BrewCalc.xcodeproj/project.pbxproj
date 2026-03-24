@@ -59,6 +59,7 @@
 				Services/CalorieCalculatorTests.swift,
 				Services/IBUCalculatorTests.swift,
 				Services/UnitConverterTests.swift,
+				ViewModels/AppViewModelTests.swift,
 				ViewModels/CalculatorDetailViewModelTests.swift,
 			);
 			target = A0099B9418F4882E0054F850 /* BrewCalc */;
@@ -71,6 +72,7 @@
 				Services/CalorieCalculatorTests.swift,
 				Services/IBUCalculatorTests.swift,
 				Services/UnitConverterTests.swift,
+				ViewModels/AppViewModelTests.swift,
 				ViewModels/CalculatorDetailViewModelTests.swift,
 			);
 			target = 484212C02F6EB5A90009A582 /* BrewCalcTests */;
