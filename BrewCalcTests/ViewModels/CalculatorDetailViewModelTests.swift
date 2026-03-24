@@ -1,5 +1,6 @@
 import Testing
 @testable import BrewCalc
+// SpyAnalyticsService and AnalyticsEvent: Equatable are defined in AppViewModelTests.swift
 
 struct CalculatorDetailViewModelTests {
 
@@ -110,6 +111,41 @@ struct CalculatorDetailViewModelTests {
         if case .number(let hop1IBU) = calculator.outputs[1] {
             #expect(hop1IBU.value > 0.0, "Hop 1 IBU should be positive: \(hop1IBU.value)")
         }
+    }
+
+    @Test("Debounce: multiple rapid input changes emit only one calculation event")
+    @MainActor
+    func rapidInputChangesEmitSingleEvent() async throws {
+        let spy = SpyAnalyticsService()
+        let category = CalculatorCategory(localizedName: "Gravity", calculators: [GravityConverter()])
+        let vm = CalculatorDetailViewModel(category: category, analytics: spy, debounceDelay: .milliseconds(10))
+
+        vm.updateInput(calculatorIndex: 0, inputIndex: 0, value: 10.0)
+        vm.updateInput(calculatorIndex: 0, inputIndex: 0, value: 11.0)
+        vm.updateInput(calculatorIndex: 0, inputIndex: 0, value: 12.0)
+
+        try await Task.sleep(for: .milliseconds(50))
+
+        let calcEvents = spy.trackedEvents.filter {
+            if case .calculationPerformed = $0 { return true }
+            return false
+        }
+        #expect(calcEvents.count == 1)
+    }
+
+    @Test("Debounce: emitted event carries correct calculator and category names")
+    @MainActor
+    func debounceEmitsCorrectNames() async throws {
+        let spy = SpyAnalyticsService()
+        let category = CalculatorCategory(localizedName: "Gravity", calculators: [GravityConverter()])
+        let vm = CalculatorDetailViewModel(category: category, analytics: spy, debounceDelay: .milliseconds(10))
+
+        vm.updateInput(calculatorIndex: 0, inputIndex: 0, value: 12.0)
+
+        try await Task.sleep(for: .milliseconds(50))
+
+        let expectedName = String(describing: type(of: GravityConverter()))
+        #expect(spy.trackedEvents == [.calculationPerformed(calculatorName: expectedName, categoryName: "Gravity")])
     }
 
     @Test("Unit switching converts values")

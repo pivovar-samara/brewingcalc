@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var viewModel = AppViewModel()
+    @Bindable var viewModel: AppViewModel
 
     var body: some View {
         NavigationSplitView {
@@ -9,7 +9,7 @@ struct ContentView: View {
         } detail: {
             if let category = viewModel.selectedCategory {
                 CalculatorDetailView(
-                    viewModel: CalculatorDetailViewModel(category: category),
+                    viewModel: viewModel.makeDetailViewModel(for: category),
                     onCategoryUpdated: { updated in
                         viewModel.updateCategory(updated)
                     }
