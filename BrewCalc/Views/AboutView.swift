@@ -25,8 +25,23 @@ struct AboutView: View {
     private var privacyURL: URL? { isRussian ? AboutURLs.privacyRU : AboutURLs.privacyEN }
     private var supportURL: URL? { isRussian ? AboutURLs.supportRU : AboutURLs.supportEN }
 
+    private var appVersion: String {
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "—"
+        let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "—"
+        return "\(version) (\(build))"
+    }
+
     var body: some View {
         List {
+            Section {
+                HStack {
+                    Text(l("about.label.version"))
+                    Spacer()
+                    Text(appVersion)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
             Section(l("about.section.contact")) {
                 Button {
                     openEmail()
