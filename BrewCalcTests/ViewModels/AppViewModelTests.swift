@@ -51,4 +51,27 @@ struct AppViewModelTests {
 
         #expect(spy.trackedEvents.count == 1)
     }
+
+    @Test("Setting showAbout to true fires aboutOpened event")
+    @MainActor
+    func showAboutFiresAboutOpenedEvent() {
+        let spy = SpyAnalyticsService()
+        let vm = AppViewModel(analytics: spy)
+
+        vm.showAbout = true
+
+        #expect(spy.trackedEvents == [.aboutOpened])
+    }
+
+    @Test("Setting showAbout to false does not fire aboutOpened event")
+    @MainActor
+    func dismissingAboutDoesNotFireEvent() {
+        let spy = SpyAnalyticsService()
+        let vm = AppViewModel(analytics: spy)
+        vm.showAbout = true
+
+        vm.showAbout = false
+
+        #expect(spy.trackedEvents == [.aboutOpened])
+    }
 }
