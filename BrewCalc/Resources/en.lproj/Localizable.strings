@@ -103,6 +103,7 @@
 "button.close" = "Close";
 
 "about.title" = "About";
+"about.label.version" = "Version";
 "about.label.email" = "Looking forward to your feedback at:";
 "about.alert.email.cant.send.title" = "Mail app not configured";
 "about.alert.email.cant.send.message" = "Email address has been copied to the clipboard";

@@ -103,6 +103,7 @@
 "button.close" = "Закрыть";
 
 "about.title" = "О программе";
+"about.label.version" = "Версия";
 "about.label.email" = "Будем рады вашему отзыву по адресу:";
 "about.alert.email.cant.send.title" = "Почтовый клиент не настроен";
 "about.alert.email.cant.send.message" = "Адрес скопирован в буфер обмена";
