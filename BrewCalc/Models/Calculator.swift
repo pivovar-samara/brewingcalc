@@ -2,7 +2,8 @@ import Foundation
 
 protocol BrewCalculator: Identifiable, Sendable {
     var id: UUID { get }
-    var name: String { get }
+    var uniqueName: String { get }
+    var localizedName: String { get }
     var inputs: [CalculatorInput] { get set }
     var outputs: [CalculatorInput] { get }
     var hasSeparateOutputSection: Bool { get }
@@ -29,7 +30,8 @@ extension BrewCalculator {
 
 struct GravityConverter: BrewCalculator {
     let id = UUID()
-    var name: String { l("calc.gravity") }
+    var uniqueName: String { "gravity" }
+    var localizedName: String { l("calc.gravity") }
     var inputs: [CalculatorInput]
 
     init() {
@@ -67,7 +69,8 @@ struct GravityConverter: BrewCalculator {
 
 struct VolumeConverter: BrewCalculator {
     let id = UUID()
-    var name: String { l("metrics.volume") }
+    var uniqueName: String { "volume" }
+    var localizedName: String { l("metrics.volume") }
     var inputs: [CalculatorInput]
 
     init() {
@@ -104,7 +107,8 @@ struct VolumeConverter: BrewCalculator {
 
 struct WeightConverter: BrewCalculator {
     let id = UUID()
-    var name: String { l("metrics.weight") }
+    var uniqueName: String { "weight" }
+    var localizedName: String { l("metrics.weight") }
     var inputs: [CalculatorInput]
 
     init() {
@@ -135,7 +139,8 @@ struct WeightConverter: BrewCalculator {
 
 struct TemperatureConverter: BrewCalculator {
     let id = UUID()
-    var name: String { l("metrics.temperature") }
+    var uniqueName: String { "temperature" }
+    var localizedName: String { l("metrics.temperature") }
     var inputs: [CalculatorInput]
 
     init() {
@@ -165,7 +170,8 @@ struct TemperatureConverter: BrewCalculator {
 
 struct CalorieCalculatorModel: BrewCalculator {
     let id = UUID()
-    var name: String { l("calc.calorie.input") }
+    var uniqueName: String { "calorie" }
+    var localizedName: String { l("calc.calorie.input") }
     var hasSeparateOutputSection: Bool { true }
     var outputSectionName: String? { l("calc.calorie.result") }
     var inputs: [CalculatorInput]
@@ -270,7 +276,8 @@ struct CalorieCalculatorModel: BrewCalculator {
 
 struct ABVTableCalculator: BrewCalculator {
     let id = UUID()
-    var name: String { l("calc.alcohol.table.input") }
+    var uniqueName: String { "abv-table" }
+    var localizedName: String { l("calc.alcohol.table.input") }
     var hasSeparateOutputSection: Bool { true }
     var outputSectionName: String? { l("calc.alcohol.table.result") }
     var inputs: [CalculatorInput]
@@ -342,7 +349,8 @@ struct ABVTableCalculator: BrewCalculator {
 
 struct ABVFormulaCalculator: BrewCalculator {
     let id = UUID()
-    var name: String { l("calc.alcohol.formula.input") }
+    var uniqueName: String { "abv-formula" }
+    var localizedName: String { l("calc.alcohol.formula.input") }
     var hasSeparateOutputSection: Bool { true }
     var outputSectionName: String? { l("calc.alcohol.formula.result") }
     var inputs: [CalculatorInput]
@@ -457,7 +465,8 @@ struct ABVFormulaCalculator: BrewCalculator {
 
 struct BrixCalculatorModel: BrewCalculator {
     let id = UUID()
-    var name: String { l("calc.brixes.gravity.input") }
+    var uniqueName: String { "brix" }
+    var localizedName: String { l("calc.brixes.gravity.input") }
     var hasSeparateOutputSection: Bool { true }
     var outputSectionName: String? { l("calc.brixes.gravity.output") }
     var inputs: [CalculatorInput]
@@ -683,7 +692,8 @@ struct BrixCalculatorModel: BrewCalculator {
 
 struct BitteringCalculator: BrewCalculator {
     let id = UUID()
-    var name: String { l("calc.bittering.input") }
+    var uniqueName: String { "bittering" }
+    var localizedName: String { l("calc.bittering.input") }
     var hasSeparateOutputSection: Bool { true }
     var outputSectionName: String? { l("calc.bittering.output") }
     var inputs: [CalculatorInput]

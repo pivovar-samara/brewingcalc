@@ -8,7 +8,7 @@ struct CalculatorDetailView: View {
         Form {
             ForEach(Array(viewModel.category.calculators.enumerated()), id: \.element.id) { calcIndex, calculator in
                 // Input section
-                Section(header: Text(calculator.name)) {
+                Section(header: Text(calculator.localizedName)) {
                     ForEach(Array(calculator.inputs.enumerated()), id: \.element.id) { inputIndex, input in
                         inputView(for: input, calculatorIndex: calcIndex, inputIndex: inputIndex)
                     }

@@ -8,6 +8,7 @@ struct CalculatorDetailViewModelTests {
     @MainActor
     func gravityConverterUpdates() {
         var category = CalculatorCategory(
+            uniqueName: "UniqueTestCategory",
             localizedName: "Test",
             calculators: [GravityConverter()]
         )
@@ -117,7 +118,8 @@ struct CalculatorDetailViewModelTests {
     @MainActor
     func rapidInputChangesEmitSingleEvent() async throws {
         let spy = SpyAnalyticsService()
-        let category = CalculatorCategory(localizedName: "Gravity", calculators: [GravityConverter()])
+        let categoryName = "Metrics"
+        let category = CalculatorCategory(uniqueName: categoryName, localizedName: "Gravity", calculators: [GravityConverter()])
         let vm = CalculatorDetailViewModel(category: category, analytics: spy, debounceDelay: .milliseconds(10))
 
         await confirmation("single calculationPerformed event after rapid input", expectedCount: 1) { confirm in
@@ -135,7 +137,8 @@ struct CalculatorDetailViewModelTests {
     @MainActor
     func debounceEmitsCorrectNames() async throws {
         let spy = SpyAnalyticsService()
-        let category = CalculatorCategory(localizedName: "Gravity", calculators: [GravityConverter()])
+        let categoryName = "Metrics"
+        let category = CalculatorCategory(uniqueName: categoryName, localizedName: "Gravity", calculators: [GravityConverter()])
         let vm = CalculatorDetailViewModel(category: category, analytics: spy, debounceDelay: .milliseconds(10))
 
         await confirmation("calculationPerformed event fired") { confirm in
@@ -146,8 +149,8 @@ struct CalculatorDetailViewModelTests {
             try? await Task.sleep(for: .milliseconds(500))
         }
 
-        let expectedName = String(describing: type(of: GravityConverter()))
-        #expect(spy.trackedEvents == [.calculationPerformed(calculatorName: expectedName, categoryName: "Gravity")])
+        let expectedName = GravityConverter().uniqueName
+        #expect(spy.trackedEvents == [.calculationPerformed(calculatorName: expectedName, categoryName: categoryName)])
     }
 
     @Test("Unit switching converts values")
