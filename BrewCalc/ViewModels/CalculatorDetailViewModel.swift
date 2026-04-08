@@ -68,8 +68,8 @@ final class CalculatorDetailViewModel {
 
     private func trackCalculation(calculatorIndex: Int) {
         guard calculatorIndex < category.calculators.count else { return }
-        let calculatorName = String(describing: type(of: category.calculators[calculatorIndex]))
-        let categoryName = category.localizedName
+        let calculatorName = category.calculators[calculatorIndex].uniqueName
+        let categoryName = category.uniqueName
 
         pendingTrackTask?.cancel()
         pendingTrackTask = Task { @MainActor [analytics, debounceDelay] in

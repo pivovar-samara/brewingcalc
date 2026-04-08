@@ -244,6 +244,7 @@
 				A0099B9118F4882E0054F850 /* Sources */,
 				A0099B9218F4882E0054F850 /* Frameworks */,
 				A0099B9318F4882E0054F850 /* Resources */,
+				4EC1B189A0A4441487E47849 /* Upload dSYMs to Crashlytics */,
 			);
 			buildRules = (
 			);
@@ -332,6 +333,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		4EC1B189A0A4441487E47849 /* Upload dSYMs to Crashlytics */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Upload dSYMs to Crashlytics";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "if [[ \"$CONFIGURATION\" != \"Release\" ]]; then\n  echo \"Skipping dSYM upload for non-Release build\"\n  exit 0\nfi\n\nif [[ \"$PLATFORM_NAME\" != \"iphoneos\" ]]; then\n  echo \"Skipping dSYM upload for non-device platform: $PLATFORM_NAME\"\n  exit 0\nfi\n\nUPLOAD_SYMBOLS=\"${BUILD_DIR%Build/*}SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/upload-symbols\"\n\nif [[ ! -f \"$UPLOAD_SYMBOLS\" ]]; then\n  echo \"warning: upload-symbols not found at $UPLOAD_SYMBOLS — skipping dSYM upload\"\n  exit 0\nfi\n\n\"$UPLOAD_SYMBOLS\" \\\n  -ai \"${FIREBASE_APP_ID}\" \\\n  -p ios \\\n  \"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		484212BD2F6EB5A90009A582 /* Sources */ = {
@@ -647,11 +670,11 @@
 					"@executable_path/Frameworks",
 				);
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu99 gnu++11";
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = ru.ilyakhokhlov.beercalc;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 6.0;

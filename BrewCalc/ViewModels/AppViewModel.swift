@@ -9,7 +9,7 @@ final class AppViewModel {
             guard selectedCategoryID != oldValue,
                   let id = selectedCategoryID,
                   let category = categories.first(where: { $0.id == id }) else { return }
-            analytics.track(.calculatorOpened(categoryName: category.localizedName))
+            analytics.track(.calculatorOpened(categoryName: category.uniqueName))
         }
     }
     var showAbout = false {

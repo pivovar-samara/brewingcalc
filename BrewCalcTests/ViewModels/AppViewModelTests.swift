@@ -38,7 +38,7 @@ struct AppViewModelTests {
 
         vm.selectedCategoryID = first.id
 
-        #expect(spy.trackedEvents == [.calculatorOpened(categoryName: first.localizedName)])
+        #expect(spy.trackedEvents == [.calculatorOpened(categoryName: first.uniqueName)])
     }
 
     @Test("Reassigning the same category ID does not re-fire")
