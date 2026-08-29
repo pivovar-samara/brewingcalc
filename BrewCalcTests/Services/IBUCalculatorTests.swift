@@ -49,7 +49,7 @@ struct IBUCalculatorTests {
             gravity: 1.050
         )
         // Tinseth formula should produce a positive, reasonable IBU
-        #expect(result > 10.0 && result < 80.0, "IBU should be reasonable: \(result)")
+        #expect(result > 32.0 && result < 36.0, "IBU should be reasonable: \(result)")
     }
 
     @Test("Higher gravity reduces IBU")
