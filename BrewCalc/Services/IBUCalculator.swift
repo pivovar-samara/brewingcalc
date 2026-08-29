@@ -11,6 +11,7 @@ enum IBUCalculator: Sendable {
         volumeGallons: Double,
         gravity: Double
     ) -> Double {
+        guard volumeGallons > 0 else { return 0.0 }
         let someAlpha = alphaAcid / 100.0
         let someWeight = weightOz * 7490.0
         let someVolume = volumeGallons

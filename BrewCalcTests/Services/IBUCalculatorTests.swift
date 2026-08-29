@@ -39,6 +39,18 @@ struct IBUCalculatorTests {
         #expect(result == 0.0)
     }
 
+    @Test("Zero volume produces zero IBU")
+    func zeroVolume() {
+        let result = IBUCalculator.tinsethIBU(
+            alphaAcid: 10.0,
+            weightOz: 1.0,
+            boilMinutes: 60.0,
+            volumeGallons: 0.0,
+            gravity: 1.050
+        )
+        #expect(result == 0.0)
+    }
+
     @Test("Known IBU value - 1oz, 10% alpha, 60min, 5gal, 1.050 SG")
     func knownIBU() {
         let result = IBUCalculator.tinsethIBU(
