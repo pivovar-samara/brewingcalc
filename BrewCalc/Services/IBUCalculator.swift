@@ -11,10 +11,11 @@ enum IBUCalculator: Sendable {
         volumeGallons: Double,
         gravity: Double
     ) -> Double {
+        guard volumeGallons > 0 else { return 0.0 }
         let someAlpha = alphaAcid / 100.0
         let someWeight = weightOz * 7490.0
-        let someVolume = volumeGallons * 1.65
-        let someGravity = pow(0.000125, gravity - 1.0)
+        let someVolume = volumeGallons
+        let someGravity = pow(0.000125, gravity - 1.0) * 1.65
         let someTime = 1.0 - exp(-0.04 * boilMinutes)
         return someAlpha * someWeight / someVolume * someGravity * someTime / 4.15
     }
