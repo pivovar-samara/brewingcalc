@@ -7,15 +7,18 @@ BrewingCalc is an iOS 26+ brewing calculator app built with SwiftUI. It provides
 - **SwiftUI** with `@Observable` view models and `NavigationSplitView` for iPhone+iPad
 - **Services layer**: Pure static functions for all brewing calculations (no side effects)
 - **Models**: Value types (structs) conforming to `Sendable`, `Identifiable`, `Equatable`
-- **No persistence**: All data is in-memory, resets on launch
+- **Persistence**: Inputs persisted to `UserDefaults` via `CalculatorPersistence`. Tests that construct `CalculatorDetailViewModel` with a persistable calculator read and write real defaults.
 - **No external dependencies**: Pure Apple frameworks only
 
 ## Build & Test
 ```bash
-xcodebuild -scheme BrewCalc -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build
-xcodebuild test -scheme BrewCalc -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
+xcodebuild -scheme BrewCalc -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.2' build
+xcodebuild test -scheme BrewCalc -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.2'
 ```
 > There is only one scheme (`BrewCalc`); `BrewCalcTests` is a target, not a scheme.
+> Without `OS=`, xcodebuild only looks at the newest installed runtime. If the destination
+> is not found, run `xcrun simctl list devices available` and pick any iOS 26+ simulator
+> (by `name=…,OS=…` or `id=<UDID>`).
 
 ## Code Style
 - Swift 6 with strict concurrency (`Sendable` everywhere, `@MainActor` on view models)
