@@ -355,3 +355,123 @@ struct CalculatorDetailViewModelTests {
         }
     }
 }
+
+/// Hop-count persistence through `CalculatorDetailViewModel`.
+/// Each test uses its own `UserDefaults` suite, so the app's real defaults are never touched.
+@MainActor
+struct BitteringPersistenceTests {
+
+    private let hopIndex = BitteringCalculator.firstHopIndex
+
+    private func makeDefaults() throws -> (UserDefaults, String) {
+        let suiteName = "BitteringPersistenceTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        return (defaults, suiteName)
+    }
+
+    private func makeViewModel(defaults: UserDefaults) -> CalculatorDetailViewModel {
+        let category = CalculatorCategory(uniqueName: "Bittering", localizedName: "IBU", calculators: [BitteringCalculator()])
+        return CalculatorDetailViewModel(category: category, defaults: defaults)
+    }
+
+    private func bittering(_ vm: CalculatorDetailViewModel) throws -> BitteringCalculator {
+        try #require(vm.category.calculators[0] as? BitteringCalculator)
+    }
+
+    private func hopValues(_ calculator: BitteringCalculator, inputIndex: Int) -> [Double]? {
+        guard case .threeNumbers(let hop) = calculator.inputs[inputIndex] else { return nil }
+        return [hop.number1.value, hop.number2.value, hop.number3.value]
+    }
+
+    private func setHop(_ vm: CalculatorDetailViewModel, inputIndex: Int, _ values: [Double]) {
+        for (offset, value) in values.enumerated() {
+            vm.updateThreeNumberInput(calculatorIndex: 0, inputIndex: inputIndex, numberIndex: offset + 1, value: value)
+        }
+    }
+
+    @Test("Hop count and values survive view model re-creation")
+    func hopsRoundTrip() throws {
+        let (defaults, suiteName) = try makeDefaults()
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let vm = makeViewModel(defaults: defaults)
+        vm.addHop(calculatorIndex: 0)
+        vm.addHop(calculatorIndex: 0)
+        setHop(vm, inputIndex: hopIndex, [25, 6, 60])
+        setHop(vm, inputIndex: hopIndex + 1, [15, 8, 20])
+        setHop(vm, inputIndex: hopIndex + 2, [10, 4, 5])
+
+        let restored = try bittering(makeViewModel(defaults: defaults))
+        #expect(restored.hopCount == 3)
+        #expect(hopValues(restored, inputIndex: hopIndex) == [25, 6, 60])
+        #expect(hopValues(restored, inputIndex: hopIndex + 1) == [15, 8, 20])
+        #expect(hopValues(restored, inputIndex: hopIndex + 2) == [10, 4, 5])
+    }
+
+    @Test("Saved count wins over stale values of removed hops")
+    func savedCountIgnoresStaleHopKeys() throws {
+        let (defaults, suiteName) = try makeDefaults()
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let vm = makeViewModel(defaults: defaults)
+        vm.addHop(calculatorIndex: 0)
+        vm.addHop(calculatorIndex: 0)
+        setHop(vm, inputIndex: hopIndex + 2, [10, 4, 5])
+        vm.removeHop(calculatorIndex: 0, inputIndex: hopIndex + 2)
+
+        let restored = try bittering(makeViewModel(defaults: defaults))
+        #expect(restored.hopCount == 2)
+    }
+
+    @Test("Reset hops persists a single zeroed hop")
+    func resetHopsPersists() throws {
+        let (defaults, suiteName) = try makeDefaults()
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let vm = makeViewModel(defaults: defaults)
+        vm.addHop(calculatorIndex: 0)
+        setHop(vm, inputIndex: hopIndex + 1, [15, 8, 20])
+        vm.resetHops(calculatorIndex: 0)
+
+        let restored = try bittering(makeViewModel(defaults: defaults))
+        #expect(restored.hopCount == 1)
+        #expect(hopValues(restored, inputIndex: hopIndex) == [0, 0, 0])
+    }
+
+    @Test("Without a saved count, hop count is inferred from legacy values")
+    func legacyFallbackInfersCount() throws {
+        let (defaults, suiteName) = try makeDefaults()
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        // Legacy layout: 5 fixed hop slots, hop 4 is the last one with a weight, no itemCount key.
+        var legacy = BitteringCalculator()
+        legacy.setHopCount(5)
+        let seeded: [[Double]] = [[20, 5, 60], [0, 0, 0], [12, 7, 15], [8, 9, 5], [0, 0, 0]]
+        for (offset, values) in seeded.enumerated() {
+            if case .threeNumbers(var hop) = legacy.inputs[hopIndex + offset] {
+                hop.number1.value = values[0]
+                hop.number2.value = values[1]
+                hop.number3.value = values[2]
+                legacy.inputs[hopIndex + offset] = .threeNumbers(hop)
+            }
+        }
+        CalculatorPersistence.save(inputs: legacy.inputs, forCalculatorNamed: "BitteringCalculator", defaults: defaults)
+        #expect(CalculatorPersistence.restoreItemCount(forCalculatorNamed: "BitteringCalculator", defaults: defaults) == nil)
+
+        let restored = try bittering(makeViewModel(defaults: defaults))
+        #expect(restored.hopCount == 4)
+        for offset in 0..<4 {
+            #expect(hopValues(restored, inputIndex: hopIndex + offset) == seeded[offset])
+        }
+    }
+
+    @Test("Without any saved data, the calculator starts with one default hop")
+    func noSavedDataKeepsDefaults() throws {
+        let (defaults, suiteName) = try makeDefaults()
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let restored = try bittering(makeViewModel(defaults: defaults))
+        #expect(restored.hopCount == 1)
+        #expect(hopValues(restored, inputIndex: hopIndex) == [20, 5, 60])
+    }
+}

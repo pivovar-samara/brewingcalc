@@ -14,17 +14,20 @@ final class CalculatorDetailViewModel {
 
     private let analytics: any AnalyticsService
     private let debounceDelay: Duration
+    private let defaults: UserDefaults
     @ObservationIgnored
     private var pendingTrackTask: Task<Void, Never>?
 
     init(
         category: CalculatorCategory,
         analytics: any AnalyticsService = NoOpAnalyticsService(),
-        debounceDelay: Duration = .seconds(1.5)
+        debounceDelay: Duration = .seconds(1.5),
+        defaults: UserDefaults = .standard
     ) {
         self.category = category
         self.analytics = analytics
         self.debounceDelay = debounceDelay
+        self.defaults = defaults
         for index in category.calculators.indices {
             let name = String(describing: type(of: category.calculators[index]))
             guard persistableCalculatorNames.contains(name) else { continue }
@@ -32,11 +35,12 @@ final class CalculatorDetailViewModel {
 
             // Restore the number of hops before index-based value restore so indices line up.
             if var bittering = calculator as? BitteringCalculator {
-                let count = CalculatorPersistence.restoreItemCount(forCalculatorNamed: name)
+                let count = CalculatorPersistence.restoreItemCount(forCalculatorNamed: name, defaults: defaults)
                     ?? CalculatorPersistence.legacyThreeNumbersCount(
                         forCalculatorNamed: name,
                         firstIndex: BitteringCalculator.firstHopIndex,
-                        maxLegacyCount: 5
+                        maxLegacyCount: 5,
+                        defaults: defaults
                     )
                 bittering.setHopCount(count)
                 calculator = bittering
@@ -44,12 +48,11 @@ final class CalculatorDetailViewModel {
 
             if calculator.outputs.isEmpty {
                 // Simple converters: direct restore, all state lives in inputs
-                CalculatorPersistence.restore(into: &calculator.inputs, forCalculatorNamed: name)
+                CalculatorPersistence.restore(into: &calculator.inputs, forCalculatorNamed: name, defaults: defaults)
             } else {
                 // Two-phase restore for Calorie, ABVTable, ABVFormula, Bittering:
                 // Phase 1 — apply saved segment selections via calculate() so that
                 //            field titles and numberOfDigits are updated correctly.
-                let defaults = UserDefaults.standard
                 for inputIndex in calculator.inputs.indices {
                     guard case .segmented(let s) = calculator.inputs[inputIndex] else { continue }
                     let k = "persistence.\(name).input.\(inputIndex)"
@@ -63,7 +66,7 @@ final class CalculatorDetailViewModel {
                 }
                 // Phase 2 — override number values with the saved values (the segment
                 //            switch above converted init defaults; we replace them here).
-                CalculatorPersistence.restoreNumbers(into: &calculator.inputs, forCalculatorNamed: name)
+                CalculatorPersistence.restoreNumbers(into: &calculator.inputs, forCalculatorNamed: name, defaults: defaults)
                 // Phase 3 — recompute outputs from restored inputs.
                 calculator.calculate(changedIndex: calculator.inputs.count - 1)
             }
@@ -75,9 +78,9 @@ final class CalculatorDetailViewModel {
     private func persistIfNeeded(_ calculator: any BrewCalculator) {
         let name = String(describing: type(of: calculator))
         guard persistableCalculatorNames.contains(name) else { return }
-        CalculatorPersistence.save(inputs: calculator.inputs, forCalculatorNamed: name)
+        CalculatorPersistence.save(inputs: calculator.inputs, forCalculatorNamed: name, defaults: defaults)
         if let bittering = calculator as? BitteringCalculator {
-            CalculatorPersistence.saveItemCount(bittering.hopCount, forCalculatorNamed: name)
+            CalculatorPersistence.saveItemCount(bittering.hopCount, forCalculatorNamed: name, defaults: defaults)
         }
     }
 

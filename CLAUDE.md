@@ -7,7 +7,7 @@ BrewingCalc is an iOS 26+ brewing calculator app built with SwiftUI. It provides
 - **SwiftUI** with `@Observable` view models and `NavigationSplitView` for iPhone+iPad
 - **Services layer**: Pure static functions for all brewing calculations (no side effects)
 - **Models**: Value types (structs) conforming to `Sendable`, `Identifiable`, `Equatable`
-- **Persistence**: Inputs persisted to `UserDefaults` via `CalculatorPersistence`. Tests that construct `CalculatorDetailViewModel` with a persistable calculator read and write real defaults.
+- **Persistence**: Inputs persisted to `UserDefaults` via `CalculatorPersistence`. `CalculatorPersistence` and `CalculatorDetailViewModel` take a `defaults: UserDefaults` parameter (default `.standard`); tests should pass an isolated `UserDefaults(suiteName:)` (see `BitteringPersistenceTests`).
 - **No external dependencies**: Pure Apple frameworks only
 
 ## Build & Test
