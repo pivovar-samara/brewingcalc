@@ -86,17 +86,11 @@
 "calc.bittering.hop.param.weight.gram" = "Weight, gr";
 "calc.bittering.hop.param.alpha" = "Alpha";
 "calc.bittering.hop.param.min" = "Boiling, min";
-"calc.bittering.hop1.params" = "Hop 1 params";
-"calc.bittering.hop2.params" = "Hop 2 params";
-"calc.bittering.hop3.params" = "Hop 3 params";
-"calc.bittering.hop4.params" = "Hop 4 params";
-"calc.bittering.hop5.params" = "Hop 5 params";
+"calc.bittering.hop.params" = "Hop %d params";
+"calc.bittering.hop.add" = "Add hop";
+"calc.bittering.hop.remove" = "Delete";
 "calc.bittering.result" = "Total IBU";
-"calc.bittering.result.hop1" = "Hop 1 IBU";
-"calc.bittering.result.hop2" = "Hop 2 IBU";
-"calc.bittering.result.hop3" = "Hop 3 IBU";
-"calc.bittering.result.hop4" = "Hop 4 IBU";
-"calc.bittering.result.hop5" = "Hop 5 IBU";
+"calc.bittering.result.hop" = "Hop %d IBU";
 
 "menu.right.button" = "About";
 

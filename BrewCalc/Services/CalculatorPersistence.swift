@@ -69,6 +69,37 @@ enum CalculatorPersistence {
         }
     }
 
+    // MARK: - Dynamic item count (e.g. number of hops)
+
+    static func saveItemCount(_ count: Int, forCalculatorNamed name: String) {
+        UserDefaults.standard.set(count, forKey: itemCountKey(calculatorName: name))
+    }
+
+    static func restoreItemCount(forCalculatorNamed name: String) -> Int? {
+        let defaults = UserDefaults.standard
+        let k = itemCountKey(calculatorName: name)
+        guard defaults.object(forKey: k) != nil else { return nil }
+        return defaults.integer(forKey: k)
+    }
+
+    /// Infers how many `.threeNumbers` groups were in use before the item count was persisted:
+    /// the highest group (starting at `firstIndex`) whose first value is non-zero. Minimum 1.
+    static func legacyThreeNumbersCount(forCalculatorNamed name: String, firstIndex: Int, maxLegacyCount: Int) -> Int {
+        let defaults = UserDefaults.standard
+        var count = 1
+        for offset in 0..<maxLegacyCount {
+            let k = subKey(calculatorName: name, inputIndex: firstIndex + offset, sub: 1)
+            if defaults.double(forKey: k) != 0 {
+                count = offset + 1
+            }
+        }
+        return count
+    }
+
+    private static func itemCountKey(calculatorName: String) -> String {
+        "persistence.\(calculatorName).itemCount"
+    }
+
     private static func key(calculatorName: String, inputIndex: Int) -> String {
         "persistence.\(calculatorName).input.\(inputIndex)"
     }

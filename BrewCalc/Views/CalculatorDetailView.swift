@@ -11,6 +11,27 @@ struct CalculatorDetailView: View {
                 Section(header: Text(calculator.localizedName)) {
                     ForEach(Array(calculator.inputs.enumerated()), id: \.element.id) { inputIndex, input in
                         inputView(for: input, calculatorIndex: calcIndex, inputIndex: inputIndex)
+                            .swipeActions(edge: .trailing) {
+                                if viewModel.isRemovableHop(calculatorIndex: calcIndex, inputIndex: inputIndex) {
+                                    Button(role: .destructive) {
+                                        withAnimation {
+                                            viewModel.removeHop(calculatorIndex: calcIndex, inputIndex: inputIndex)
+                                        }
+                                    } label: {
+                                        Label(l("calc.bittering.hop.remove"), systemImage: "trash")
+                                    }
+                                }
+                            }
+                    }
+
+                    if viewModel.canAddHop(calculatorIndex: calcIndex) {
+                        Button {
+                            withAnimation {
+                                viewModel.addHop(calculatorIndex: calcIndex)
+                            }
+                        } label: {
+                            Label(l("calc.bittering.hop.add"), systemImage: "plus.circle.fill")
+                        }
                     }
                 }
 

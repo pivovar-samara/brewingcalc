@@ -30,6 +30,18 @@ final class CalculatorDetailViewModel {
             guard persistableCalculatorNames.contains(name) else { continue }
             var calculator = category.calculators[index]
 
+            // Restore the number of hops before index-based value restore so indices line up.
+            if var bittering = calculator as? BitteringCalculator {
+                let count = CalculatorPersistence.restoreItemCount(forCalculatorNamed: name)
+                    ?? CalculatorPersistence.legacyThreeNumbersCount(
+                        forCalculatorNamed: name,
+                        firstIndex: BitteringCalculator.firstHopIndex,
+                        maxLegacyCount: 5
+                    )
+                bittering.setHopCount(count)
+                calculator = bittering
+            }
+
             if calculator.outputs.isEmpty {
                 // Simple converters: direct restore, all state lives in inputs
                 CalculatorPersistence.restore(into: &calculator.inputs, forCalculatorNamed: name)
@@ -64,6 +76,9 @@ final class CalculatorDetailViewModel {
         let name = String(describing: type(of: calculator))
         guard persistableCalculatorNames.contains(name) else { return }
         CalculatorPersistence.save(inputs: calculator.inputs, forCalculatorNamed: name)
+        if let bittering = calculator as? BitteringCalculator {
+            CalculatorPersistence.saveItemCount(bittering.hopCount, forCalculatorNamed: name)
+        }
     }
 
     private func trackCalculation(calculatorIndex: Int) {
@@ -146,6 +161,38 @@ final class CalculatorDetailViewModel {
         calculator.calculate(changedIndex: inputIndex)
         category.calculators[calculatorIndex] = calculator
         persistIfNeeded(calculator)
+        trackCalculation(calculatorIndex: calculatorIndex)
+    }
+
+    // MARK: - Hop list (IBU calculator)
+
+    func canAddHop(calculatorIndex: Int) -> Bool {
+        guard calculatorIndex < category.calculators.count,
+              let bittering = category.calculators[calculatorIndex] as? BitteringCalculator else { return false }
+        return bittering.canAddHop
+    }
+
+    func isRemovableHop(calculatorIndex: Int, inputIndex: Int) -> Bool {
+        guard calculatorIndex < category.calculators.count,
+              let bittering = category.calculators[calculatorIndex] as? BitteringCalculator else { return false }
+        return bittering.isHop(inputIndex: inputIndex) && bittering.hopCount > 1
+    }
+
+    func addHop(calculatorIndex: Int) {
+        guard calculatorIndex < category.calculators.count,
+              var bittering = category.calculators[calculatorIndex] as? BitteringCalculator else { return }
+        bittering.addHop()
+        category.calculators[calculatorIndex] = bittering
+        persistIfNeeded(bittering)
+        trackCalculation(calculatorIndex: calculatorIndex)
+    }
+
+    func removeHop(calculatorIndex: Int, inputIndex: Int) {
+        guard calculatorIndex < category.calculators.count,
+              var bittering = category.calculators[calculatorIndex] as? BitteringCalculator else { return }
+        bittering.removeHop(atInputIndex: inputIndex)
+        category.calculators[calculatorIndex] = bittering
+        persistIfNeeded(bittering)
         trackCalculation(calculatorIndex: calculatorIndex)
     }
 }

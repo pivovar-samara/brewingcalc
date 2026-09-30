@@ -1,3 +1,4 @@
+import Foundation
 import Testing
 @testable import BrewCalc
 // SpyAnalyticsService and AnalyticsEvent: Equatable are defined in AppViewModelTests.swift
@@ -177,5 +178,128 @@ struct CalculatorDetailViewModelTests {
         if case .number(let og) = calculator.inputs[1] {
             #expect(og.value > 1.0 && og.value < 1.1, "Should be SG now: \(og.value)")
         }
+    }
+
+    // MARK: - Dynamic hop list
+
+    private func hopTitle(_ input: CalculatorInput) -> String? {
+        if case .threeNumbers(let hop) = input { return hop.title }
+        return nil
+    }
+
+    private func setHop(_ calculator: inout BitteringCalculator, inputIndex: Int, weight: Double, alpha: Double, minutes: Double) {
+        if case .threeNumbers(var hop) = calculator.inputs[inputIndex] {
+            hop.number1.value = weight
+            hop.number2.value = alpha
+            hop.number3.value = minutes
+            calculator.inputs[inputIndex] = .threeNumbers(hop)
+        }
+        calculator.calculate(changedIndex: inputIndex)
+    }
+
+    @Test("Bittering calculator starts with a single hop")
+    func bitteringStartsWithOneHop() {
+        let calculator = BitteringCalculator()
+        #expect(calculator.hopCount == 1)
+        #expect(calculator.inputs.count == BitteringCalculator.firstHopIndex + 1)
+        #expect(calculator.outputs.count == 2)
+        #expect(calculator.canAddHop)
+    }
+
+    @Test("addHop appends a numbered hop and its output")
+    func addHopAppends() {
+        var calculator = BitteringCalculator()
+        calculator.addHop()
+        #expect(calculator.hopCount == 2)
+        #expect(calculator.outputs.count == 3)
+        #expect(hopTitle(calculator.inputs[5]) == String(format: l("calc.bittering.hop.params"), 2))
+        if case .number(let out) = calculator.outputs[2] {
+            #expect(out.title == String(format: l("calc.bittering.result.hop"), 2))
+        }
+    }
+
+    @Test("Hop added in US units gets an oz weight title")
+    func addHopUsesCurrentUnits() {
+        var calculator = BitteringCalculator()
+        if case .segmented(var seg) = calculator.inputs[0] {
+            seg.selectedIndex = 1
+            calculator.inputs[0] = .segmented(seg)
+        }
+        calculator.calculate(changedIndex: 0)
+        calculator.addHop()
+        if case .threeNumbers(let hop) = calculator.inputs[5] {
+            #expect(hop.number1.title == l("calc.bittering.hop.param.weight.oz"))
+        } else {
+            Issue.record("Expected a hop input at index 5")
+        }
+    }
+
+    @Test("addHop stops at the maximum number of hops")
+    func addHopRespectsMax() {
+        var calculator = BitteringCalculator()
+        for _ in 0..<20 { calculator.addHop() }
+        #expect(calculator.hopCount == BitteringCalculator.maxHops)
+        #expect(calculator.outputs.count == BitteringCalculator.maxHops + 1)
+        #expect(!calculator.canAddHop)
+    }
+
+    @Test("removeHop removes the hop, its output and renumbers the rest")
+    func removeHopRenumbers() {
+        var calculator = BitteringCalculator()
+        calculator.addHop()
+        calculator.addHop()
+        setHop(&calculator, inputIndex: 6, weight: 30, alpha: 7, minutes: 15)
+
+        calculator.removeHop(atInputIndex: 5)
+
+        #expect(calculator.hopCount == 2)
+        #expect(calculator.outputs.count == 3)
+        #expect(hopTitle(calculator.inputs[5]) == String(format: l("calc.bittering.hop.params"), 2))
+        if case .threeNumbers(let hop) = calculator.inputs[5] {
+            #expect(hop.number1.value == 30)
+        }
+        if case .number(let out) = calculator.outputs[2] {
+            #expect(out.title == String(format: l("calc.bittering.result.hop"), 2))
+            #expect(out.value > 0)
+        }
+    }
+
+    @Test("The last remaining hop cannot be removed")
+    func removeLastHopIsNoOp() {
+        var calculator = BitteringCalculator()
+        calculator.removeHop(atInputIndex: BitteringCalculator.firstHopIndex)
+        #expect(calculator.hopCount == 1)
+        calculator.removeHop(atInputIndex: 2)
+        #expect(calculator.inputs.count == BitteringCalculator.firstHopIndex + 1)
+    }
+
+    @Test("Total IBU equals the sum of per-hop IBUs")
+    func totalIBUIsSumOfHops() {
+        var calculator = BitteringCalculator()
+        calculator.addHop()
+        calculator.addHop()
+        setHop(&calculator, inputIndex: 5, weight: 15, alpha: 6, minutes: 30)
+        setHop(&calculator, inputIndex: 6, weight: 10, alpha: 8, minutes: 10)
+
+        var perHop = 0.0
+        for output in calculator.outputs.dropFirst() {
+            if case .number(let n) = output { perHop += n.value }
+        }
+        if case .number(let total) = calculator.outputs[0] {
+            #expect(abs(total.value - perHop) < 0.0001)
+            #expect(total.value > 0)
+        }
+    }
+
+    @Test("setHopCount clamps to the valid range")
+    func setHopCountClamps() {
+        var calculator = BitteringCalculator()
+        calculator.setHopCount(4)
+        #expect(calculator.hopCount == 4)
+        #expect(calculator.outputs.count == 5)
+        calculator.setHopCount(0)
+        #expect(calculator.hopCount == 1)
+        calculator.setHopCount(99)
+        #expect(calculator.hopCount == BitteringCalculator.maxHops)
     }
 }
