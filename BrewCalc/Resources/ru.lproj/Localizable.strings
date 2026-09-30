@@ -100,8 +100,6 @@
 
 "menu.right.button" = "О программе";
 
-"button.close" = "Закрыть";
-
 "about.title" = "О программе";
 "about.label.version" = "Версия";
 "about.label.email" = "Будем рады вашему отзыву по адресу:";

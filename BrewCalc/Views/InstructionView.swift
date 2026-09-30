@@ -34,8 +34,8 @@ struct InstructionView: View {
         }
         .navigationTitle(l("instruction.title"))
         .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Button(l("button.close")) {
+            ToolbarItem(placement: .cancellationAction) {
+                Button(role: .close) {
                     dismiss()
                 }
             }
