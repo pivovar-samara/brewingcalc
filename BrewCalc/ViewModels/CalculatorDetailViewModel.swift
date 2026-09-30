@@ -187,6 +187,20 @@ final class CalculatorDetailViewModel {
         trackCalculation(calculatorIndex: calculatorIndex)
     }
 
+    func canResetHops(calculatorIndex: Int) -> Bool {
+        guard calculatorIndex < category.calculators.count else { return false }
+        return category.calculators[calculatorIndex] is BitteringCalculator
+    }
+
+    func resetHops(calculatorIndex: Int) {
+        guard calculatorIndex < category.calculators.count,
+              var bittering = category.calculators[calculatorIndex] as? BitteringCalculator else { return }
+        bittering.resetHops()
+        category.calculators[calculatorIndex] = bittering
+        persistIfNeeded(bittering)
+        trackCalculation(calculatorIndex: calculatorIndex)
+    }
+
     func removeHop(calculatorIndex: Int, inputIndex: Int) {
         guard calculatorIndex < category.calculators.count,
               var bittering = category.calculators[calculatorIndex] as? BitteringCalculator else { return }

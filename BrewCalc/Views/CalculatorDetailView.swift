@@ -3,6 +3,7 @@ import SwiftUI
 struct CalculatorDetailView: View {
     @State var viewModel: CalculatorDetailViewModel
     var onCategoryUpdated: ((CalculatorCategory) -> Void)?
+    @State private var resetHopsCalculatorIndex: Int?
 
     var body: some View {
         Form {
@@ -31,6 +32,33 @@ struct CalculatorDetailView: View {
                             }
                         } label: {
                             Label(l("calc.bittering.hop.add"), systemImage: "plus.circle.fill")
+                        }
+                    }
+
+                    if viewModel.canResetHops(calculatorIndex: calcIndex) {
+                        Button(role: .destructive) {
+                            resetHopsCalculatorIndex = calcIndex
+                        } label: {
+                            Label(l("calc.bittering.hop.reset"), systemImage: "arrow.counterclockwise")
+                                .foregroundStyle(.red)
+                        }
+                        .confirmationDialog(
+                            l("calc.bittering.hop.reset.confirm"),
+                            isPresented: Binding(
+                                get: { resetHopsCalculatorIndex == calcIndex },
+                                set: { if !$0 { resetHopsCalculatorIndex = nil } }
+                            ),
+                            titleVisibility: .visible
+                        ) {
+                            Button(l("calc.bittering.hop.reset"), role: .destructive) {
+                                withAnimation {
+                                    viewModel.resetHops(calculatorIndex: calcIndex)
+                                }
+                                resetHopsCalculatorIndex = nil
+                            }
+                            Button(l("calc.bittering.hop.reset.cancel"), role: .cancel) {
+                                resetHopsCalculatorIndex = nil
+                            }
                         }
                     }
                 }

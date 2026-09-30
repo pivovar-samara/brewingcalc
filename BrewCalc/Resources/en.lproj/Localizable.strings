@@ -89,6 +89,9 @@
 "calc.bittering.hop.params" = "Hop %d params";
 "calc.bittering.hop.add" = "Add hop";
 "calc.bittering.hop.remove" = "Delete";
+"calc.bittering.hop.reset" = "Reset hops";
+"calc.bittering.hop.reset.confirm" = "All hop values will be cleared";
+"calc.bittering.hop.reset.cancel" = "Cancel";
 "calc.bittering.result" = "Total IBU";
 "calc.bittering.result.hop" = "Hop %d IBU";
 

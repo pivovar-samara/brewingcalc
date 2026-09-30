@@ -187,6 +187,13 @@ struct CalculatorDetailViewModelTests {
         return nil
     }
 
+    private func numberValues(_ inputs: ArraySlice<CalculatorInput>) -> [Double] {
+        inputs.compactMap { input in
+            if case .number(let n) = input { return n.value }
+            return nil
+        }
+    }
+
     private func setHop(_ calculator: inout BitteringCalculator, inputIndex: Int, weight: Double, alpha: Double, minutes: Double) {
         if case .threeNumbers(var hop) = calculator.inputs[inputIndex] {
             hop.number1.value = weight
@@ -301,5 +308,50 @@ struct CalculatorDetailViewModelTests {
         #expect(calculator.hopCount == 1)
         calculator.setHopCount(99)
         #expect(calculator.hopCount == BitteringCalculator.maxHops)
+    }
+
+    @Test("resetHops leaves a single zeroed hop and zero IBU")
+    func resetHopsLeavesSingleZeroedHop() {
+        var calculator = BitteringCalculator()
+        calculator.addHop()
+        calculator.addHop()
+        setHop(&calculator, inputIndex: 5, weight: 15, alpha: 6, minutes: 30)
+        calculator.resetHops()
+
+        #expect(calculator.hopCount == 1)
+        #expect(calculator.outputs.count == 2)
+        #expect(hopTitle(calculator.inputs[BitteringCalculator.firstHopIndex]) == String(format: l("calc.bittering.hop.params"), 1))
+        if case .threeNumbers(let hop) = calculator.inputs[BitteringCalculator.firstHopIndex] {
+            #expect(hop.number1.value == 0)
+            #expect(hop.number2.value == 0)
+            #expect(hop.number3.value == 0)
+        } else {
+            Issue.record("Expected a hop input at index \(BitteringCalculator.firstHopIndex)")
+        }
+        if case .number(let total) = calculator.outputs[0] {
+            #expect(total.value == 0)
+        }
+    }
+
+    @Test("resetHops keeps units, volume and gravity")
+    func resetHopsKeepsOtherInputs() {
+        var calculator = BitteringCalculator()
+        if case .segmented(var seg) = calculator.inputs[0] {
+            seg.selectedIndex = 1
+            calculator.inputs[0] = .segmented(seg)
+        }
+        calculator.calculate(changedIndex: 0)
+        let before = numberValues(calculator.inputs[0..<BitteringCalculator.firstHopIndex])
+        calculator.resetHops()
+
+        #expect(numberValues(calculator.inputs[0..<BitteringCalculator.firstHopIndex]) == before)
+        if case .segmented(let seg) = calculator.inputs[0] {
+            #expect(seg.selectedIndex == 1)
+        }
+        if case .threeNumbers(let hop) = calculator.inputs[BitteringCalculator.firstHopIndex] {
+            #expect(hop.number1.title == l("calc.bittering.hop.param.weight.oz"))
+        } else {
+            Issue.record("Expected a hop input at index \(BitteringCalculator.firstHopIndex)")
+        }
     }
 }

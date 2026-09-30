@@ -754,6 +754,13 @@ struct BitteringCalculator: BrewCalculator {
         calculate(changedIndex: inputs.count - 1)
     }
 
+    /// Removes all hops but the first and zeroes its values.
+    mutating func resetHops() {
+        setHopCount(1)
+        inputs[Self.firstHopIndex] = .threeNumbers(makeHop(number: 1))
+        calculate(changedIndex: inputs.count - 1)
+    }
+
     private mutating func appendHop() {
         let number = hopCount + 1
         inputs.append(.threeNumbers(makeHop(number: number)))

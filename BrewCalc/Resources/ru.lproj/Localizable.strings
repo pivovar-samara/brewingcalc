@@ -89,6 +89,9 @@
 "calc.bittering.hop.params" = "Параметры хмеля %d";
 "calc.bittering.hop.add" = "Добавить хмель";
 "calc.bittering.hop.remove" = "Удалить";
+"calc.bittering.hop.reset" = "Сбросить хмели";
+"calc.bittering.hop.reset.confirm" = "Все значения хмелей будут сброшены";
+"calc.bittering.hop.reset.cancel" = "Отмена";
 "calc.bittering.result" = "Общая горечь";
 "calc.bittering.result.hop" = "Горечь хмеля %d";
 
