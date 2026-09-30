@@ -74,8 +74,8 @@ struct AboutView: View {
         }
         .navigationTitle(l("about.title"))
         .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Button(l("button.close")) {
+            ToolbarItem(placement: .cancellationAction) {
+                Button(role: .close) {
                     dismiss()
                 }
             }

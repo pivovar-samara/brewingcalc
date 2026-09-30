@@ -12,7 +12,7 @@ struct CalculatorListView: View {
         .navigationTitle(l("calcs"))
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button(l("menu.right.button")) {
+                Button(l("menu.right.button"), systemImage: "info.circle") {
                     viewModel.showAbout = true
                 }
             }

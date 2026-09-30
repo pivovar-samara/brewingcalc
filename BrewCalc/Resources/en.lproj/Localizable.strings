@@ -100,8 +100,6 @@
 
 "menu.right.button" = "About";
 
-"button.close" = "Close";
-
 "about.title" = "About";
 "about.label.version" = "Version";
 "about.label.email" = "Looking forward to your feedback at:";

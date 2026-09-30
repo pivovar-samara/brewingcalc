@@ -23,7 +23,6 @@ struct ContentView: View {
                 )
             }
         }
-        .tint(.brewCalcAccent)
         .sheet(isPresented: $viewModel.showAbout) {
             NavigationStack {
                 AboutView(analytics: viewModel.analytics)
