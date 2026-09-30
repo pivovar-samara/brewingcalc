@@ -2,8 +2,7 @@ import Foundation
 
 enum CalculatorPersistence {
 
-    static func save(inputs: [CalculatorInput], forCalculatorNamed name: String) {
-        let defaults = UserDefaults.standard
+    static func save(inputs: [CalculatorInput], forCalculatorNamed name: String, defaults: UserDefaults = .standard) {
         for (index, input) in inputs.enumerated() {
             switch input {
             case .number(let n):
@@ -21,8 +20,7 @@ enum CalculatorPersistence {
     /// Restores only `.number` and `.threeNumbers` values, skipping segments.
     /// Used in phase 2 of the two-phase restore: after segments have already been
     /// applied via `calculate(changedIndex:)` to update titles and numberOfDigits.
-    static func restoreNumbers(into inputs: inout [CalculatorInput], forCalculatorNamed name: String) {
-        let defaults = UserDefaults.standard
+    static func restoreNumbers(into inputs: inout [CalculatorInput], forCalculatorNamed name: String, defaults: UserDefaults = .standard) {
         for index in inputs.indices {
             switch inputs[index] {
             case .number(var n):
@@ -44,8 +42,7 @@ enum CalculatorPersistence {
         }
     }
 
-    static func restore(into inputs: inout [CalculatorInput], forCalculatorNamed name: String) {
-        let defaults = UserDefaults.standard
+    static func restore(into inputs: inout [CalculatorInput], forCalculatorNamed name: String, defaults: UserDefaults = .standard) {
         for index in inputs.indices {
             let k = key(calculatorName: name, inputIndex: index)
             switch inputs[index] {
@@ -67,6 +64,37 @@ enum CalculatorPersistence {
                 inputs[index] = .threeNumbers(t)
             }
         }
+    }
+
+    // MARK: - Dynamic item count (e.g. number of hops)
+
+    static func saveItemCount(_ count: Int, forCalculatorNamed name: String, defaults: UserDefaults = .standard) {
+        defaults.set(count, forKey: itemCountKey(calculatorName: name))
+    }
+
+    static func restoreItemCount(forCalculatorNamed name: String, defaults: UserDefaults = .standard) -> Int? {
+        let k = itemCountKey(calculatorName: name)
+        guard defaults.object(forKey: k) != nil else { return nil }
+        return defaults.integer(forKey: k)
+    }
+
+    /// Infers how many `.threeNumbers` groups were in use before the item count was persisted:
+    /// the highest group (starting at `firstIndex`) with any non-zero value. Minimum 1.
+    static func legacyThreeNumbersCount(forCalculatorNamed name: String, firstIndex: Int, maxLegacyCount: Int, defaults: UserDefaults = .standard) -> Int {
+        var count = 1
+        for offset in 0..<maxLegacyCount {
+            let isConfigured = (1...3).contains { sub in
+                defaults.double(forKey: subKey(calculatorName: name, inputIndex: firstIndex + offset, sub: sub)) != 0
+            }
+            if isConfigured {
+                count = offset + 1
+            }
+        }
+        return count
+    }
+
+    private static func itemCountKey(calculatorName: String) -> String {
+        "persistence.\(calculatorName).itemCount"
     }
 
     private static func key(calculatorName: String, inputIndex: Int) -> String {

@@ -1,3 +1,4 @@
+import Foundation
 import Testing
 @testable import BrewCalc
 // SpyAnalyticsService and AnalyticsEvent: Equatable are defined in AppViewModelTests.swift
@@ -177,5 +178,319 @@ struct CalculatorDetailViewModelTests {
         if case .number(let og) = calculator.inputs[1] {
             #expect(og.value > 1.0 && og.value < 1.1, "Should be SG now: \(og.value)")
         }
+    }
+
+    // MARK: - Dynamic hop list
+
+    private func hopTitle(_ input: CalculatorInput) -> String? {
+        if case .threeNumbers(let hop) = input { return hop.title }
+        return nil
+    }
+
+    private func numberValues(_ inputs: ArraySlice<CalculatorInput>) -> [Double] {
+        inputs.compactMap { input in
+            if case .number(let n) = input { return n.value }
+            return nil
+        }
+    }
+
+    private func setHop(_ calculator: inout BitteringCalculator, inputIndex: Int, weight: Double, alpha: Double, minutes: Double) {
+        if case .threeNumbers(var hop) = calculator.inputs[inputIndex] {
+            hop.number1.value = weight
+            hop.number2.value = alpha
+            hop.number3.value = minutes
+            calculator.inputs[inputIndex] = .threeNumbers(hop)
+        }
+        calculator.calculate(changedIndex: inputIndex)
+    }
+
+    @Test("Bittering calculator starts with a single hop")
+    func bitteringStartsWithOneHop() {
+        let calculator = BitteringCalculator()
+        #expect(calculator.hopCount == 1)
+        #expect(calculator.inputs.count == BitteringCalculator.firstHopIndex + 1)
+        #expect(calculator.outputs.count == 2)
+        #expect(calculator.canAddHop)
+    }
+
+    @Test("addHop appends a numbered hop and its output")
+    func addHopAppends() {
+        var calculator = BitteringCalculator()
+        calculator.addHop()
+        #expect(calculator.hopCount == 2)
+        #expect(calculator.outputs.count == 3)
+        #expect(hopTitle(calculator.inputs[5]) == String(format: l("calc.bittering.hop.params"), 2))
+        if case .number(let out) = calculator.outputs[2] {
+            #expect(out.title == String(format: l("calc.bittering.result.hop"), 2))
+        }
+    }
+
+    @Test("Hop added in US units gets an oz weight title")
+    func addHopUsesCurrentUnits() {
+        var calculator = BitteringCalculator()
+        if case .segmented(var seg) = calculator.inputs[0] {
+            seg.selectedIndex = 1
+            calculator.inputs[0] = .segmented(seg)
+        }
+        calculator.calculate(changedIndex: 0)
+        calculator.addHop()
+        if case .threeNumbers(let hop) = calculator.inputs[5] {
+            #expect(hop.number1.title == l("calc.bittering.hop.param.weight.oz"))
+        } else {
+            Issue.record("Expected a hop input at index 5")
+        }
+    }
+
+    @Test("addHop stops at the maximum number of hops")
+    func addHopRespectsMax() {
+        var calculator = BitteringCalculator()
+        for _ in 0..<20 { calculator.addHop() }
+        #expect(calculator.hopCount == BitteringCalculator.maxHops)
+        #expect(calculator.outputs.count == BitteringCalculator.maxHops + 1)
+        #expect(!calculator.canAddHop)
+    }
+
+    @Test("removeHop removes the hop, its output and renumbers the rest")
+    func removeHopRenumbers() {
+        var calculator = BitteringCalculator()
+        calculator.addHop()
+        calculator.addHop()
+        setHop(&calculator, inputIndex: 6, weight: 30, alpha: 7, minutes: 15)
+
+        calculator.removeHop(atInputIndex: 5)
+
+        #expect(calculator.hopCount == 2)
+        #expect(calculator.outputs.count == 3)
+        #expect(hopTitle(calculator.inputs[5]) == String(format: l("calc.bittering.hop.params"), 2))
+        if case .threeNumbers(let hop) = calculator.inputs[5] {
+            #expect(hop.number1.value == 30)
+        }
+        if case .number(let out) = calculator.outputs[2] {
+            #expect(out.title == String(format: l("calc.bittering.result.hop"), 2))
+            #expect(out.value > 0)
+        }
+    }
+
+    @Test("The last remaining hop cannot be removed")
+    func removeLastHopIsNoOp() {
+        var calculator = BitteringCalculator()
+        calculator.removeHop(atInputIndex: BitteringCalculator.firstHopIndex)
+        #expect(calculator.hopCount == 1)
+        calculator.removeHop(atInputIndex: 2)
+        #expect(calculator.inputs.count == BitteringCalculator.firstHopIndex + 1)
+    }
+
+    @Test("Total IBU equals the sum of per-hop IBUs")
+    func totalIBUIsSumOfHops() {
+        var calculator = BitteringCalculator()
+        calculator.addHop()
+        calculator.addHop()
+        setHop(&calculator, inputIndex: 5, weight: 15, alpha: 6, minutes: 30)
+        setHop(&calculator, inputIndex: 6, weight: 10, alpha: 8, minutes: 10)
+
+        var perHop = 0.0
+        for output in calculator.outputs.dropFirst() {
+            if case .number(let n) = output { perHop += n.value }
+        }
+        if case .number(let total) = calculator.outputs[0] {
+            #expect(abs(total.value - perHop) < 0.0001)
+            #expect(total.value > 0)
+        }
+    }
+
+    @Test("setHopCount clamps to the valid range")
+    func setHopCountClamps() {
+        var calculator = BitteringCalculator()
+        calculator.setHopCount(4)
+        #expect(calculator.hopCount == 4)
+        #expect(calculator.outputs.count == 5)
+        calculator.setHopCount(0)
+        #expect(calculator.hopCount == 1)
+        calculator.setHopCount(99)
+        #expect(calculator.hopCount == BitteringCalculator.maxHops)
+    }
+
+    @Test("resetHops leaves a single zeroed hop and zero IBU")
+    func resetHopsLeavesSingleZeroedHop() {
+        var calculator = BitteringCalculator()
+        calculator.addHop()
+        calculator.addHop()
+        setHop(&calculator, inputIndex: 5, weight: 15, alpha: 6, minutes: 30)
+        calculator.resetHops()
+
+        #expect(calculator.hopCount == 1)
+        #expect(calculator.outputs.count == 2)
+        #expect(hopTitle(calculator.inputs[BitteringCalculator.firstHopIndex]) == String(format: l("calc.bittering.hop.params"), 1))
+        if case .threeNumbers(let hop) = calculator.inputs[BitteringCalculator.firstHopIndex] {
+            #expect(hop.number1.value == 0)
+            #expect(hop.number2.value == 0)
+            #expect(hop.number3.value == 0)
+        } else {
+            Issue.record("Expected a hop input at index \(BitteringCalculator.firstHopIndex)")
+        }
+        if case .number(let total) = calculator.outputs[0] {
+            #expect(total.value == 0)
+        }
+    }
+
+    @Test("resetHops keeps units, volume and gravity")
+    func resetHopsKeepsOtherInputs() {
+        var calculator = BitteringCalculator()
+        if case .segmented(var seg) = calculator.inputs[0] {
+            seg.selectedIndex = 1
+            calculator.inputs[0] = .segmented(seg)
+        }
+        calculator.calculate(changedIndex: 0)
+        let before = numberValues(calculator.inputs[0..<BitteringCalculator.firstHopIndex])
+        calculator.resetHops()
+
+        #expect(numberValues(calculator.inputs[0..<BitteringCalculator.firstHopIndex]) == before)
+        if case .segmented(let seg) = calculator.inputs[0] {
+            #expect(seg.selectedIndex == 1)
+        }
+        if case .threeNumbers(let hop) = calculator.inputs[BitteringCalculator.firstHopIndex] {
+            #expect(hop.number1.title == l("calc.bittering.hop.param.weight.oz"))
+        } else {
+            Issue.record("Expected a hop input at index \(BitteringCalculator.firstHopIndex)")
+        }
+    }
+}
+
+/// Hop-count persistence through `CalculatorDetailViewModel`.
+/// Each test uses its own `UserDefaults` suite, so the app's real defaults are never touched.
+@MainActor
+struct BitteringPersistenceTests {
+
+    private let hopIndex = BitteringCalculator.firstHopIndex
+
+    private func makeDefaults() throws -> (UserDefaults, String) {
+        let suiteName = "BitteringPersistenceTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        return (defaults, suiteName)
+    }
+
+    private func makeViewModel(defaults: UserDefaults) -> CalculatorDetailViewModel {
+        let category = CalculatorCategory(uniqueName: "Bittering", localizedName: "IBU", calculators: [BitteringCalculator()])
+        return CalculatorDetailViewModel(category: category, defaults: defaults)
+    }
+
+    private func bittering(_ vm: CalculatorDetailViewModel) throws -> BitteringCalculator {
+        try #require(vm.category.calculators[0] as? BitteringCalculator)
+    }
+
+    private func hopValues(_ calculator: BitteringCalculator, inputIndex: Int) -> [Double]? {
+        guard case .threeNumbers(let hop) = calculator.inputs[inputIndex] else { return nil }
+        return [hop.number1.value, hop.number2.value, hop.number3.value]
+    }
+
+    private func setHop(_ vm: CalculatorDetailViewModel, inputIndex: Int, _ values: [Double]) {
+        for (offset, value) in values.enumerated() {
+            vm.updateThreeNumberInput(calculatorIndex: 0, inputIndex: inputIndex, numberIndex: offset + 1, value: value)
+        }
+    }
+
+    @Test("Hop count and values survive view model re-creation")
+    func hopsRoundTrip() throws {
+        let (defaults, suiteName) = try makeDefaults()
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let vm = makeViewModel(defaults: defaults)
+        vm.addHop(calculatorIndex: 0)
+        vm.addHop(calculatorIndex: 0)
+        setHop(vm, inputIndex: hopIndex, [25, 6, 60])
+        setHop(vm, inputIndex: hopIndex + 1, [15, 8, 20])
+        setHop(vm, inputIndex: hopIndex + 2, [10, 4, 5])
+
+        let restored = try bittering(makeViewModel(defaults: defaults))
+        #expect(restored.hopCount == 3)
+        #expect(hopValues(restored, inputIndex: hopIndex) == [25, 6, 60])
+        #expect(hopValues(restored, inputIndex: hopIndex + 1) == [15, 8, 20])
+        #expect(hopValues(restored, inputIndex: hopIndex + 2) == [10, 4, 5])
+    }
+
+    @Test("Saved count wins over stale values of removed hops")
+    func savedCountIgnoresStaleHopKeys() throws {
+        let (defaults, suiteName) = try makeDefaults()
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let vm = makeViewModel(defaults: defaults)
+        vm.addHop(calculatorIndex: 0)
+        vm.addHop(calculatorIndex: 0)
+        setHop(vm, inputIndex: hopIndex + 2, [10, 4, 5])
+        vm.removeHop(calculatorIndex: 0, inputIndex: hopIndex + 2)
+
+        let restored = try bittering(makeViewModel(defaults: defaults))
+        #expect(restored.hopCount == 2)
+    }
+
+    @Test("Reset hops persists a single zeroed hop")
+    func resetHopsPersists() throws {
+        let (defaults, suiteName) = try makeDefaults()
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let vm = makeViewModel(defaults: defaults)
+        vm.addHop(calculatorIndex: 0)
+        setHop(vm, inputIndex: hopIndex + 1, [15, 8, 20])
+        vm.resetHops(calculatorIndex: 0)
+
+        let restored = try bittering(makeViewModel(defaults: defaults))
+        #expect(restored.hopCount == 1)
+        #expect(hopValues(restored, inputIndex: hopIndex) == [0, 0, 0])
+    }
+
+    @Test("Without a saved count, hop count is inferred from legacy values")
+    func legacyFallbackInfersCount() throws {
+        let (defaults, suiteName) = try makeDefaults()
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        // Legacy layout: 5 fixed hop slots, hop 4 is the last one with a weight, no itemCount key.
+        var legacy = BitteringCalculator()
+        legacy.setHopCount(5)
+        let seeded: [[Double]] = [[20, 5, 60], [0, 0, 0], [12, 7, 15], [8, 9, 5], [0, 0, 0]]
+        for (offset, values) in seeded.enumerated() {
+            if case .threeNumbers(var hop) = legacy.inputs[hopIndex + offset] {
+                hop.number1.value = values[0]
+                hop.number2.value = values[1]
+                hop.number3.value = values[2]
+                legacy.inputs[hopIndex + offset] = .threeNumbers(hop)
+            }
+        }
+        CalculatorPersistence.save(inputs: legacy.inputs, forCalculatorNamed: "BitteringCalculator", defaults: defaults)
+        #expect(CalculatorPersistence.restoreItemCount(forCalculatorNamed: "BitteringCalculator", defaults: defaults) == nil)
+
+        let restored = try bittering(makeViewModel(defaults: defaults))
+        #expect(restored.hopCount == 4)
+        for offset in 0..<4 {
+            #expect(hopValues(restored, inputIndex: hopIndex + offset) == seeded[offset])
+        }
+    }
+
+    @Test("Legacy hop with zero weight but other values set is still restored")
+    func legacyFallbackConsidersAllHopFields() throws {
+        let (defaults, suiteName) = try makeDefaults()
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        var legacy = BitteringCalculator()
+        legacy.setHopCount(5)
+        if case .threeNumbers(var hop) = legacy.inputs[hopIndex + 3] {
+            hop.number2.value = 7
+            hop.number3.value = 15
+            legacy.inputs[hopIndex + 3] = .threeNumbers(hop)
+        }
+        CalculatorPersistence.save(inputs: legacy.inputs, forCalculatorNamed: "BitteringCalculator", defaults: defaults)
+
+        let restored = try bittering(makeViewModel(defaults: defaults))
+        #expect(restored.hopCount == 4)
+        #expect(hopValues(restored, inputIndex: hopIndex + 3) == [0, 7, 15])
+    }
+
+    @Test("Without any saved data, the calculator starts with one default hop")
+    func noSavedDataKeepsDefaults() throws {
+        let (defaults, suiteName) = try makeDefaults()
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let restored = try bittering(makeViewModel(defaults: defaults))
+        #expect(restored.hopCount == 1)
+        #expect(hopValues(restored, inputIndex: hopIndex) == [20, 5, 60])
     }
 }

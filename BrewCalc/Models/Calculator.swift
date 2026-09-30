@@ -699,52 +699,113 @@ struct BitteringCalculator: BrewCalculator {
     var inputs: [CalculatorInput]
     var outputs: [CalculatorInput]
 
+    static let firstHopIndex = 4
+    static let maxHops = 10
+
+    var hopCount: Int { inputs.count - Self.firstHopIndex }
+    var canAddHop: Bool { hopCount < Self.maxHops }
+
     init() {
         inputs = [
             .segmented(SegmentedInput(segments: [l("segment.units.metric"), l("segment.units.us")], selectedIndex: 0)),
             .segmented(SegmentedInput(segments: [l("segment.units.plato"), l("segment.units.gravity")], selectedIndex: 0)),
             .number(NumberInput(title: l("calc.bittering.volume.litres"), value: 20.0, numberOfDigits: 1)),
             .number(NumberInput(title: l("calc.bittering.gravity.plato"), value: 12.0, numberOfDigits: 2)),
-            .threeNumbers(ThreeNumbersInput(
-                title: l("calc.bittering.hop1.params"),
-                number1: NumberInput(title: l("calc.bittering.hop.param.weight.gram"), value: 20.0, numberOfDigits: 1),
-                number2: NumberInput(title: l("calc.bittering.hop.param.alpha"), value: 5.0, numberOfDigits: 1),
-                number3: NumberInput(title: l("calc.bittering.hop.param.min"), value: 60.0, numberOfDigits: 1)
-            )),
-            .threeNumbers(ThreeNumbersInput(
-                title: l("calc.bittering.hop2.params"),
-                number1: NumberInput(title: l("calc.bittering.hop.param.weight.gram"), numberOfDigits: 1),
-                number2: NumberInput(title: l("calc.bittering.hop.param.alpha"), numberOfDigits: 1),
-                number3: NumberInput(title: l("calc.bittering.hop.param.min"), numberOfDigits: 1)
-            )),
-            .threeNumbers(ThreeNumbersInput(
-                title: l("calc.bittering.hop3.params"),
-                number1: NumberInput(title: l("calc.bittering.hop.param.weight.gram"), numberOfDigits: 1),
-                number2: NumberInput(title: l("calc.bittering.hop.param.alpha"), numberOfDigits: 1),
-                number3: NumberInput(title: l("calc.bittering.hop.param.min"), numberOfDigits: 1)
-            )),
-            .threeNumbers(ThreeNumbersInput(
-                title: l("calc.bittering.hop4.params"),
-                number1: NumberInput(title: l("calc.bittering.hop.param.weight.gram"), numberOfDigits: 1),
-                number2: NumberInput(title: l("calc.bittering.hop.param.alpha"), numberOfDigits: 1),
-                number3: NumberInput(title: l("calc.bittering.hop.param.min"), numberOfDigits: 1)
-            )),
-            .threeNumbers(ThreeNumbersInput(
-                title: l("calc.bittering.hop5.params"),
-                number1: NumberInput(title: l("calc.bittering.hop.param.weight.gram"), numberOfDigits: 1),
-                number2: NumberInput(title: l("calc.bittering.hop.param.alpha"), numberOfDigits: 1),
-                number3: NumberInput(title: l("calc.bittering.hop.param.min"), numberOfDigits: 1)
-            )),
         ]
         outputs = [
             .number(NumberInput(title: l("calc.bittering.result"), numberOfDigits: 1, isEditable: false)),
-            .number(NumberInput(title: l("calc.bittering.result.hop1"), numberOfDigits: 1, isEditable: false)),
-            .number(NumberInput(title: l("calc.bittering.result.hop2"), numberOfDigits: 1, isEditable: false)),
-            .number(NumberInput(title: l("calc.bittering.result.hop3"), numberOfDigits: 1, isEditable: false)),
-            .number(NumberInput(title: l("calc.bittering.result.hop4"), numberOfDigits: 1, isEditable: false)),
-            .number(NumberInput(title: l("calc.bittering.result.hop5"), numberOfDigits: 1, isEditable: false)),
         ]
-        calculate(changedIndex: 8)
+        inputs.append(.threeNumbers(makeHop(number: 1, weight: 20.0, alpha: 5.0, minutes: 60.0)))
+        outputs.append(.number(Self.makeHopOutput(number: 1)))
+        calculate(changedIndex: inputs.count - 1)
+    }
+
+    // MARK: Hop list management
+
+    func isHop(inputIndex: Int) -> Bool {
+        inputIndex >= Self.firstHopIndex && inputIndex < inputs.count
+    }
+
+    mutating func addHop() {
+        guard canAddHop else { return }
+        appendHop()
+        calculate(changedIndex: inputs.count - 1)
+    }
+
+    mutating func removeHop(atInputIndex inputIndex: Int) {
+        guard isHop(inputIndex: inputIndex), hopCount > 1 else { return }
+        let outputIndex = inputIndex - Self.firstHopIndex + 1
+        inputs.remove(at: inputIndex)
+        if outputIndex < outputs.count {
+            outputs.remove(at: outputIndex)
+        }
+        renumberHops()
+        calculate(changedIndex: inputs.count - 1)
+    }
+
+    /// Adds or removes trailing hops so that exactly `count` hops exist (clamped to 1...maxHops).
+    mutating func setHopCount(_ count: Int) {
+        let target = min(max(count, 1), Self.maxHops)
+        while hopCount < target { appendHop() }
+        while hopCount > target {
+            inputs.removeLast()
+            outputs.removeLast()
+        }
+        calculate(changedIndex: inputs.count - 1)
+    }
+
+    /// Removes all hops but the first and zeroes its values.
+    mutating func resetHops() {
+        setHopCount(1)
+        inputs[Self.firstHopIndex] = .threeNumbers(makeHop(number: 1))
+        calculate(changedIndex: inputs.count - 1)
+    }
+
+    private mutating func appendHop() {
+        let number = hopCount + 1
+        inputs.append(.threeNumbers(makeHop(number: number)))
+        outputs.append(.number(Self.makeHopOutput(number: number)))
+    }
+
+    private var isUSUnits: Bool {
+        if case .segmented(let seg) = inputs[0] { return seg.selectedIndex == 1 }
+        return false
+    }
+
+    private func makeHop(number: Int, weight: Double = 0.0, alpha: Double = 0.0, minutes: Double = 0.0) -> ThreeNumbersInput {
+        let weightTitle = isUSUnits ? l("calc.bittering.hop.param.weight.oz") : l("calc.bittering.hop.param.weight.gram")
+        return ThreeNumbersInput(
+            title: Self.hopTitle(number: number),
+            number1: NumberInput(title: weightTitle, value: weight, numberOfDigits: 1),
+            number2: NumberInput(title: l("calc.bittering.hop.param.alpha"), value: alpha, numberOfDigits: 1),
+            number3: NumberInput(title: l("calc.bittering.hop.param.min"), value: minutes, numberOfDigits: 1)
+        )
+    }
+
+    private static func makeHopOutput(number: Int) -> NumberInput {
+        NumberInput(title: hopOutputTitle(number: number), numberOfDigits: 1, isEditable: false)
+    }
+
+    private static func hopTitle(number: Int) -> String {
+        String(format: l("calc.bittering.hop.params"), number)
+    }
+
+    private static func hopOutputTitle(number: Int) -> String {
+        String(format: l("calc.bittering.result.hop"), number)
+    }
+
+    private mutating func renumberHops() {
+        for i in Self.firstHopIndex..<inputs.count {
+            let number = i - Self.firstHopIndex + 1
+            if case .threeNumbers(var hop) = inputs[i] {
+                hop.title = Self.hopTitle(number: number)
+                inputs[i] = .threeNumbers(hop)
+            }
+            if number < outputs.count, case .number(var out) = outputs[number] {
+                out.title = Self.hopOutputTitle(number: number)
+                outputs[number] = .number(out)
+            }
+        }
     }
 
     mutating func calculate(changedIndex: Int) {
@@ -760,7 +821,7 @@ struct BitteringCalculator: BrewCalculator {
                     vol.numberOfDigits = 1
                     inputs[2] = .number(vol)
                 }
-                for i in 4...8 {
+                for i in Self.firstHopIndex..<inputs.count {
                     if case .threeNumbers(var hop) = inputs[i] {
                         hop.number1.value = UnitConverter.Weight.gramsFromOz(hop.number1.value)
                         hop.number1.title = l("calc.bittering.hop.param.weight.gram")
@@ -776,7 +837,7 @@ struct BitteringCalculator: BrewCalculator {
                     vol.numberOfDigits = 1
                     inputs[2] = .number(vol)
                 }
-                for i in 4...8 {
+                for i in Self.firstHopIndex..<inputs.count {
                     if case .threeNumbers(var hop) = inputs[i] {
                         hop.number1.value = UnitConverter.Weight.ozFromGrams(hop.number1.value)
                         hop.number1.title = l("calc.bittering.hop.param.weight.oz")
@@ -822,7 +883,7 @@ struct BitteringCalculator: BrewCalculator {
         var totalIBU = 0.0
         var hopIBUs = [Double]()
 
-        for i in 4...8 {
+        for i in Self.firstHopIndex..<inputs.count {
             if case .threeNumbers(let hop) = inputs[i] {
                 var weight = hop.number1.value
                 let alpha = hop.number2.value
@@ -850,7 +911,7 @@ struct BitteringCalculator: BrewCalculator {
             total.value = totalIBU
             outputs[0] = .number(total)
         }
-        for i in 0..<hopIBUs.count {
+        for i in 0..<hopIBUs.count where i + 1 < outputs.count {
             if case .number(var hopOut) = outputs[i + 1] {
                 hopOut.value = hopIBUs[i]
                 outputs[i + 1] = .number(hopOut)

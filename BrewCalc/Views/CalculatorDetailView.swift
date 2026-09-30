@@ -3,6 +3,7 @@ import SwiftUI
 struct CalculatorDetailView: View {
     @State var viewModel: CalculatorDetailViewModel
     var onCategoryUpdated: ((CalculatorCategory) -> Void)?
+    @State private var resetHopsCalculatorIndex: Int?
 
     var body: some View {
         Form {
@@ -11,6 +12,54 @@ struct CalculatorDetailView: View {
                 Section(header: Text(calculator.localizedName)) {
                     ForEach(Array(calculator.inputs.enumerated()), id: \.element.id) { inputIndex, input in
                         inputView(for: input, calculatorIndex: calcIndex, inputIndex: inputIndex)
+                            .swipeActions(edge: .trailing) {
+                                if viewModel.isRemovableHop(calculatorIndex: calcIndex, inputIndex: inputIndex) {
+                                    Button(role: .destructive) {
+                                        withAnimation {
+                                            viewModel.removeHop(calculatorIndex: calcIndex, inputIndex: inputIndex)
+                                        }
+                                    } label: {
+                                        Label(l("calc.bittering.hop.remove"), systemImage: "trash")
+                                    }
+                                }
+                            }
+                    }
+
+                    if viewModel.canAddHop(calculatorIndex: calcIndex) {
+                        Button {
+                            withAnimation {
+                                viewModel.addHop(calculatorIndex: calcIndex)
+                            }
+                        } label: {
+                            Label(l("calc.bittering.hop.add"), systemImage: "plus.circle.fill")
+                        }
+                    }
+
+                    if viewModel.canResetHops(calculatorIndex: calcIndex) {
+                        Button(role: .destructive) {
+                            resetHopsCalculatorIndex = calcIndex
+                        } label: {
+                            Label(l("calc.bittering.hop.reset"), systemImage: "arrow.counterclockwise")
+                                .foregroundStyle(.red)
+                        }
+                        .confirmationDialog(
+                            l("calc.bittering.hop.reset.confirm"),
+                            isPresented: Binding(
+                                get: { resetHopsCalculatorIndex == calcIndex },
+                                set: { if !$0 { resetHopsCalculatorIndex = nil } }
+                            ),
+                            titleVisibility: .visible
+                        ) {
+                            Button(l("calc.bittering.hop.reset"), role: .destructive) {
+                                withAnimation {
+                                    viewModel.resetHops(calculatorIndex: calcIndex)
+                                }
+                                resetHopsCalculatorIndex = nil
+                            }
+                            Button(l("calc.bittering.hop.reset.cancel"), role: .cancel) {
+                                resetHopsCalculatorIndex = nil
+                            }
+                        }
                     }
                 }
 

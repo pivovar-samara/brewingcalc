@@ -86,17 +86,14 @@
 "calc.bittering.hop.param.weight.gram" = "Вес, грамм";
 "calc.bittering.hop.param.alpha" = "Альфа, %";
 "calc.bittering.hop.param.min" = "Кипячение, мин";
-"calc.bittering.hop1.params" = "Параметры хмеля 1";
-"calc.bittering.hop2.params" = "Параметры хмеля 2";
-"calc.bittering.hop3.params" = "Параметры хмеля 3";
-"calc.bittering.hop4.params" = "Параметры хмеля 4";
-"calc.bittering.hop5.params" = "Параметры хмеля 5";
+"calc.bittering.hop.params" = "Параметры хмеля %d";
+"calc.bittering.hop.add" = "Добавить хмель";
+"calc.bittering.hop.remove" = "Удалить";
+"calc.bittering.hop.reset" = "Сбросить хмели";
+"calc.bittering.hop.reset.confirm" = "Все значения хмелей будут сброшены";
+"calc.bittering.hop.reset.cancel" = "Отмена";
 "calc.bittering.result" = "Общая горечь";
-"calc.bittering.result.hop1" = "Горечь хмеля 1";
-"calc.bittering.result.hop2" = "Горечь хмеля 2";
-"calc.bittering.result.hop3" = "Горечь хмеля 3";
-"calc.bittering.result.hop4" = "Горечь хмеля 4";
-"calc.bittering.result.hop5" = "Горечь хмеля 5";
+"calc.bittering.result.hop" = "Горечь хмеля %d";
 
 "menu.right.button" = "О программе";
 
