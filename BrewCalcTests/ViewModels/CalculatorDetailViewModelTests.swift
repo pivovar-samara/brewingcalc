@@ -465,6 +465,25 @@ struct BitteringPersistenceTests {
         }
     }
 
+    @Test("Legacy hop with zero weight but other values set is still restored")
+    func legacyFallbackConsidersAllHopFields() throws {
+        let (defaults, suiteName) = try makeDefaults()
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        var legacy = BitteringCalculator()
+        legacy.setHopCount(5)
+        if case .threeNumbers(var hop) = legacy.inputs[hopIndex + 3] {
+            hop.number2.value = 7
+            hop.number3.value = 15
+            legacy.inputs[hopIndex + 3] = .threeNumbers(hop)
+        }
+        CalculatorPersistence.save(inputs: legacy.inputs, forCalculatorNamed: "BitteringCalculator", defaults: defaults)
+
+        let restored = try bittering(makeViewModel(defaults: defaults))
+        #expect(restored.hopCount == 4)
+        #expect(hopValues(restored, inputIndex: hopIndex + 3) == [0, 7, 15])
+    }
+
     @Test("Without any saved data, the calculator starts with one default hop")
     func noSavedDataKeepsDefaults() throws {
         let (defaults, suiteName) = try makeDefaults()

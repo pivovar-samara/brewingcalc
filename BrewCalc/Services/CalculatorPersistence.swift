@@ -79,12 +79,14 @@ enum CalculatorPersistence {
     }
 
     /// Infers how many `.threeNumbers` groups were in use before the item count was persisted:
-    /// the highest group (starting at `firstIndex`) whose first value is non-zero. Minimum 1.
+    /// the highest group (starting at `firstIndex`) with any non-zero value. Minimum 1.
     static func legacyThreeNumbersCount(forCalculatorNamed name: String, firstIndex: Int, maxLegacyCount: Int, defaults: UserDefaults = .standard) -> Int {
         var count = 1
         for offset in 0..<maxLegacyCount {
-            let k = subKey(calculatorName: name, inputIndex: firstIndex + offset, sub: 1)
-            if defaults.double(forKey: k) != 0 {
+            let isConfigured = (1...3).contains { sub in
+                defaults.double(forKey: subKey(calculatorName: name, inputIndex: firstIndex + offset, sub: sub)) != 0
+            }
+            if isConfigured {
                 count = offset + 1
             }
         }
