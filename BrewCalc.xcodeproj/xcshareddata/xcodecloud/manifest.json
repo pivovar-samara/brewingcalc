@@ -1,0 +1,9 @@
+{
+  "id" : "205fd8bc-8bd1-427f-ad2d-5c7e0ed82a44",
+  "targets" : [
+    {
+      "id" : "8EA0EF2E-ECB0-4E42-B5DB-9285B1ADDD48",
+      "name" : "BrewCalc"
+    }
+  ]
+}
